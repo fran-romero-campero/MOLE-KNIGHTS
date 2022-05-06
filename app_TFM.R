@@ -65,6 +65,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                    label="",
                    choices=c(
                      "Home" = "home",
+                     "Relevant Information" = "intro",
                      "Global Transcriptome Statistics" = "globaltrans",
                      "Specific Gene Analysis" = "gene",
                      "Global Metabolomic Statistics" = "globalmet",
@@ -83,7 +84,9 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$div(align = "justify", "Welcome to", tags$b("Bona Nitens"),"a web based tool for the exploration of ", 
                                 tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), "data. Specially, this web tool focuses on the study of the early response to light stress
                                 in the microalgae specie",tags$i("Klebsormidium nitens"), "as a trigger for the development of different protection mechanisms at the molecular and 
-                                celular level."),
+                                celular level. We present an integrative analysis between these transcriptomic and metabolic data to characterize
+                                the molecular mechanisms involved in the response to high light in Klebsormidium and relate them to the mechanisms used by land plants
+                                or Embryophyta."),
                        tags$br(),
                        tags$div(align = "justify","For more information, select from the left side navigation bar the type of exploration in which you are interested and follow the relevant intructions.
                        In addition, a", tags$b("video tutorial"), "has been provided that describes in detail the information collected in each section. The code used to generate this websites is available on", 
@@ -92,6 +95,66 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                tags$br(),tags$br(),
                tags$div(align ="center",img(src="optico.png", align = "center", width=600))
                # 
+      ),
+      conditionalPanel(condition = "input.navigation_bar == 'intro'",
+                       tags$h4(tags$b(align="right","Introduction to our case study:")),
+                       tags$br(),
+                       tags$div(align = "justify", "The evolutionary history of the ",tags$b("green plants kingdom")," or", tags$i("Viridiplantae"),"splits into two different lineages", 
+                       tags$i("Chlorophyta")," and",tags$i("Streptophyta"),".",tags$i("Chlorophyta"),"are primarily constituted by marine and freshwater green microalgae. In turn,", tags$i("Streptophyta")," are
+                       divided into two different clades",tags$i("Charophyta"),"and",tags$i("Embryophyta"),". Whereas",tags$i("Embryophyta"),"comprises mainly land plants,",tags$i("Charophyta"),"are still 
+                       considered algae with a preference for freshwater and with some facultative terrestrial species.  Present-day",tags$i("Charophyta")," are generally 
+                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),". Accordingly, the molecular 
+                       systems that potentially allowed this group of photosynthetic organisms to evolve towards terrestrial land plants are under intense analysis."),
+                       tags$br(),
+                       tags$div(align = "justify", "During this transition, the evolution of response molecular systems to",tags$b(" terrestrial environmental stresses")," was 
+                                critical. Some terrestrial physiological adaptations, such as desiccation resistance and tolerance to UV radiation are present in 
+                                ",tags$i("Charophyta")," from which current land plant mechanisms supposedly evolved. Other system found in",tags$i("Embryophyta"),"such as auxin transport, 
+                                photoprotective capacity and adaptation to transient light changes have been identified in ",tags$i("Charophyta")," as",tags$i("Zygnema  circumcarinatum.")," Whereas
+                                these studies focus mainly on genomic data, the",tags$b("lack of multi-omic data"),"such as transcriptomic and metabolomic 
+                                data for  ",tags$i("Charophyta")," under specific conditions relevant to the terrestralization process is preventing the full characterization of
+                                the molecular systems that promoted the transition to the first land plants. "),
+                       tags$br(),tags$br(),
+                       tags$div(align ="center",img(src="filo.png", align = "center", width=600), tags$br(),
+                                tags$b("Figure 1."),"Phylogenetic tree of the evolution of green algae."),
+                       tags$br(),tags$br(),
+                       tags$div(align = "justify", "In this study, we have chosen the freshwater facultative terrestrial ",tags$i("Charophyta Klebsormidium nitens")," as",tags$b("model organism"),"
+                                to study the",tags$b("transcriptomic and metabolomic response to high light intensity"),"recreating at least one of the most critical
+                                environmental changes faced by plants during terrestralization. ",tags$i("K. nitens")," cultures consist of multicellular and non-branching
+                                filaments without specialized cells with a single chloroplast. Many",tags$i("Klebsormidium"),"species are cosmopolitan distributed in terrestrial
+                                environments as soil crusts and rocks as well as freshwater habitats like streams and rivers. "),
+                       tags$br(),
+                       tags$div(align = "justify", "Their presence in these environments expose cells to extreme conditions including ",tags$b("high light irradiance."),"
+                                Physiological studies under such conditions have been carried out reporting photosynthetic resistance against intense light 
+                                meditated by the presence of photoprotective mechanisms dissipating energy as heat (non- photochemical quenching, NPQ) and/or
+                                by the activation of alternative electron routes to reduce reactive oxygen species (ROS) production. Several comparative genomic
+                                analyses have been carried out providing evidence about ",tags$i("Klebsormidium")," possessing fundamental molecular mechanisms required for the
+                                adaptation and survival in terrestrial environments including wax-related genes,phytohormone signaling and transcription factors 
+                                involved in resistance to high light and UV radiation. Nonetheless, there are very few transcriptomic studies integrating gene 
+                                expression with physiological data aiming at the characterization of ",tags$i("Klebsormidium"),"responses to abiotic stresses."),
+                       tags$br(),tags$br(),
+                       tags$h4(tags$b(align="right","Experimental design:")),
+                       tags$br(),
+                       tags$div(align = "justify",tags$i("Klebsormidium nitens")," (strain NIES-2285) was obtained from the",tags$b(" National Institute for Environmental Studies (Japan)."),"
+                                Cells were grown photoautotrophically in Bold’s Basal Medium using photobioreactors containing 0.8 L of cell suspension and bubbled with
+                                air supplemented with 1% (v/v) CO 2 as carbon source. Photobioreactors were continuously illuminated with white light lamps at 50 μE m
+                                -2 s -1 and maintained at 20ºC. Defoamer (Antifoam 204) was added to avoid the contamination of the aeration systems. Cultures at 
+                                exponential phase with 45 μg/ml chlorophyll content were used in our experiments. Control cultures were kept under a control light 
+                                irradiance of 50 μE m -2 s -1 whereas high light cultures were illuminated for three hours with an irradiance of 1500 μE m -2 s -1. Six independent
+                                biological replicates were considered for low and high light irradiance metabolomic data generation. Cells were collected, 
+                                washed with PBS  and stored at -80ºC. "),
+                       tags$br(),
+                       tags$div(align = "justify", "METER VIDEO DE FRAN DE TIKTOK"),
+                       tags$br(),
+                       tags$div(align = "justify", "Using these cells, ",tags$b("RNA extraction"),"was performed to obtein purified RNA and the computational pipeline",tags$b("MARACAS"),"
+                                was used to determine differentially expressed genes according to a log2FC of ± 1 and a adjusted p-value or FDR 
+                                (False Discobery Rate) threshold of 0.05. he software tool",tags$b("AlgaeFUN"),"was used to perform functional 
+                                enrichment analysis based on Gene Ontology (GO) terms and Kyoto Encyclopedia of Genes and Genomes (KEGG) pathways over the sets of differentially
+                                expressed genes."),
+                       tags$br(),
+                       tags$div(align = "justify", "For",tags$b("metabolite content determination (primary metabolite, phytohormone and carotenoids)"),", cell pellets were lyophilized and the 
+                                determination was carried out by ultra high performance liquid chromatography system coupled with mass spectrometry (UPLC/MS), or HPLC (High-performance
+                                liquid chromatography) coupled to an UV-visible scanning spectrophotometer in case of carotenoids.")
+                       # 
       ),
       conditionalPanel(condition = "input.navigation_bar == 'globaltrans'",
                        tags$div(align = "justify", "Todo análisis exploratorio debe comenzar con un estudio básico. En primer lugar, 
@@ -255,14 +318,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
 
 server <- shinyServer(function(input, output, session) {
 
-        ## Barplot
-        output$boxplot <- renderPlot(
-          width     = 870,
-          height    = 600,
-          res       = 120,
-          expr = {
-            boxplot(data_matrix)
-          })
+        
 })
 
 # Run the application 
