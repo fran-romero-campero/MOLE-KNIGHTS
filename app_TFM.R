@@ -22,7 +22,7 @@ rownames(gene.expression) <- gene.ids
 
 log.gene.expression <-read.table(file = "data/log_gene-expression.tsv",header=T,as.is=T)
 de.results <-read.table(file = "data/de_results.tsv",header=T,as.is=T)
-# resultado_final<-read.table(file = "data/resultado_final.tsv",header=T,as.is=T)
+resultado_final<-read.table(file = "data/resultado_final.tsv",header=T,as.is=T)
 # head(resultado_final)
 
 
@@ -38,12 +38,12 @@ barplot.gene <- function(gene.id,gene.name,gene.expression)
   sds <- c(expression.sd.ll,expression.sd.hl)
   
   
-  par(lwd=3)
-  xpos <- barplot(means,col=c("blue","firebrick2"),
+  par(lwd=1.5)
+  xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
                   names.arg = c("LL","HL"),las=2,cex.names = 1.5,
                   ylim=c(0,max(means+sds)*1.2),cex.axis = 1.5,lwd=3,
-                  main=paste(c(gene.name, "-", gene.id),collapse=" "),
-                  cex.main=2)
+                  main=paste(c(gene.name, gene.id,sep = "\n",collapse=" ")),
+                  cex.main=1.25)
   arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
          code = 3,angle=90,lwd=2)
   return(list(means,means[2]/means[1]))
@@ -157,10 +157,30 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        # 
       ),
       conditionalPanel(condition = "input.navigation_bar == 'globaltrans'",
-                       tags$div(align = "justify", "Todo análisis exploratorio debe comenzar con un estudio básico. En primer lugar, 
-                                debe asegurarse que mimimimimi Boxplot."),
+                       tags$div(align = "justify", "One of the main ways of responding to changes in the environment is by",tags$b("modifying gene expression"),"by varying the number of transcripts
+                                present in cells that conform a specific transcriptome. For this reason, the",tags$b("RNA-seq technique"),"was developed, a massive cDNA sequencing technique obtained through RNA 
+                                extraction using high-performance sequencing. In this case, the study focused on RNA-seq applied on eukaryotic coding RNA."),
+                       tags$br(),
+                       tags$div(align = "justify", "The previous mathematical/computational analysis was carried out according to the protocol established in the",tags$b("MARACAS pipeline (url)")," specialized
+                                in microalgae using the",tags$b("HISAT2 mapper"),", obtaining as a result a",tags$b("normalized continuous data matrix (url to download matrix) by FPKM"),"(Fragments Per Kilobase of
+                                transcripts of mapped reads) that normalizes by the length of the read and by the number of millions of reads. In addition, it applies a second upper quantile
+                                normalization and log2 transformation that, as can be seen",tags$b("(Fig. 2)"),", improves the distribution of the data."),
                        tags$br(),tags$br(),
-                       tags$div(align = "justify", "mimimimimi PCA.")
+                       tags$div(align="center",plotlyOutput("distPlot"), tags$br(),
+                                tags$b("Figure 2."),"Boxplot before and after normalization. Please, hover over the plot for more information."),
+                       tags$br(),tags$br(),
+                       tags$div(align="justify", "Moreover, this software allows to determinate",tags$b("differentially expressed genes"),". In this case, expression was detected in in",tags$b("68.4 %"),"of the 17290 genes in
+                       the current Klebsormidium genome annotation. According to a log2FC of ± 1 and a q-value or FDR (False Discobery Rate) threshold of 0.05,",tags$b("significant differential gene expression"),"
+                       was determined after three hours of high light treatment in",tags$b("7.84 %"),"of the entire Klebsormidium genome with respect to low light conditions. Specifically, we identified",tags$b("667 activates")," 
+                       and",tags$b(" 678 repressed genes.")),
+                       tags$br(),tags$br(),
+                       tags$div(splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("Volcano"), plotOutput("Barplot")), tags$br(),align="center",
+                                tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information."),
+                       #tags$div(align="center",plotlyOutput("Volcano"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
+                       #         tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information."),
+                       tags$br(),
+                       DT::dataTableOutput("table")
+                       
                        # 
       ),
       conditionalPanel(condition = "input.navigation_bar == 'gene'",
@@ -317,8 +337,156 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       
 
 server <- shinyServer(function(input, output, session) {
+  
+# Boxplots before and after
+  output$distPlot <- renderPlotly({
+    
+    # Boxplots
+    A <- ggplot(stack(as.data.frame(gene.expression)), aes(x = ind, y = values, fill = ind)) +
+      #stat_boxplot(geom = 'errorbar') +
+      geom_boxplot(outlier.shape = NA) +
+      scale_y_continuous(limits = quantile(gene.expression[,1], c(0.1, 0.8))) +
+      scale_fill_manual(values=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[2],
+                                 met.brewer("Egypt",2)[1],met.brewer("Egypt",2)[1])) +
+      theme(legend.position="none", axis.text.x = element_text(angle = 90),
+            plot.title = element_text(hjust = 0.5, size = 13),
+            panel.background = element_rect(fill = "white"),
+            axis.title = element_text(size = 11),
+            axis.text = element_text(size=9),
+            panel.grid.major = element_line(colour = "white"),
+            panel.grid.minor = element_line(colour = "white"),
+            axis.line.x.bottom = element_line(color = 'black'),
+            axis.line.y.left   = element_line(color = 'black'),
+            panel.border = element_blank()
+      ) +
+      # ggtitle("Datos crudos") +
+      xlab("Samples before normalization") +
+      ylab("FPKM")
+    
+    B <- ggplot(stack(as.data.frame(log.gene.expression)), aes(x = ind, y = values, fill = ind)) +
+      #stat_boxplot(geom = 'errorbar') +
+      geom_boxplot(outlier.shape = NA) +
+      scale_y_continuous(limits = quantile(log.gene.expression[,1], c(0.1, 0.8))) +
+      scale_fill_manual(values=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[2],
+                                 met.brewer("Egypt",2)[1],met.brewer("Egypt",2)[1])) +
+      theme(legend.position="none", axis.text.x = element_text(angle = 90),
+            plot.title = element_text(hjust = 0.5, size = 13),
+            panel.background = element_rect(fill = "white"),
+            axis.title = element_text(size = 11),
+            axis.text = element_text(size=9),
+            panel.grid.major = element_line(colour = "white"),
+            panel.grid.minor = element_line(colour = "white"),
+            axis.line.x.bottom = element_line(color = 'black'),
+            axis.line.y.left   = element_line(color = 'black'),
+            panel.border = element_blank()
+      ) +
+      # ggtitle("Datos normalizados") +
+      xlab("Samples after normalization") +
+      ylab("FPKM")
+    
+    # Plot interactivo de cada uno
+    boxplot_A<-ggplotly(A)
+    boxplot_B<-ggplotly(B)
+    
+    # Arreglando outliers
+    boxplot_A$x$data <- lapply(boxplot_A$x$data, FUN = function(x){
+      # hacerlos transparentes
+      x$marker = list(opacity = 0)
+      # hacerlos pequeños
+      #x$marker = list(size = 0.001)
+      # Con el cursor no sale la etiqueta del los outliers, pero si la de max
+      x$hoverinfo= list("y"< quantile(gene.expression[,1],probs = 0.75))
+      return(x)
+    })
+    
+    
+    # Arreglando outliers
+    boxplot_B$x$data <- lapply(boxplot_B$x$data, FUN = function(x){
+      # hacerlos transparentes
+      x$marker = list(opacity = 0)
+      # hacerlos pequeños
+      #x$marker = list(size = 0.001)
+      # Con el cursor no sale la etiqueta del los outliers, pero si la de max
+      x$hoverinfo= list("y"< quantile(gene.expression[,1],probs = 0.75))
+      return(x)
+    })
+    
+    
+    # Plot interactivo con los dos
+    subplot(boxplot_A, boxplot_B,titleX = T,titleY = T) # %>%
+      # layout(title = 'Before and After Normalization') %>%  
+  })
+  
+  
+  
+# Volcano plot
+  volcol <- c(met.brewer("Egypt",3)[1], met.brewer("Egypt",3)[2],"grey33")
+  
+  # Se asigna a cada uno de los colores los posibles niveles de expresión de los genes
+  # de acuerdo a la columna "gene_type" agregada al marco de datos de los resultados
+  # de los contrastes
+  names(volcol) <- c("activado","reprimido","ns")
+  output$Volcano <- renderPlotly({
+    # Volcano plot estatico con ggplot2
+    volcano_A<-ggplot(as.data.frame(de.results), aes(x=logFC, y=-log10(adj.P.Val),
+                                                     color=gene_type,
+                                                     text= paste0("</br> Gen: " ,gene_name,
+                                                                  "</br> Anotacion: ",annotation))) +
+      geom_point(size = 1) +
+      scale_colour_manual(values = volcol) + 
+      theme(legend.position = "none",
+            panel.background = element_rect(fill = "white"),
+            panel.grid.major = element_line(colour = "white"),
+            panel.grid.minor = element_line(colour = "white"),
+            axis.line.x.bottom = element_line(color = 'black'),
+            axis.line.y.left   = element_line(color = 'black'),
+            panel.border = element_blank(),
+            plot.title = element_text(hjust = 0.5,size = 19))# + 
+      #ggtitle("Volcano plot")
+    
+    # # Volcano interactivo con plotly
+    Volcano<-ggplotly(volcano_A,x = ~logFC, y = ~adj.P.Value,
+                      tooltip = "text",
+                      width = 350, height = 400,source = "Volcano")
+  })
 
-        
+  # Tabla que salga con el click
+  data <- reactive({
+    de.results
+  })
+  output$table<- DT::renderDataTable({
+    # Si no hay click, no hay na
+    event.data <- event_data("plotly_click", source = "Volcano")
+    print(event.data)
+    if(is.null(event.data)) { return(NULL)}
+    # Con click sale la  fila con informacion de ese gen
+    result <- data()[data()$logFC == event.data$x ,]
+    DT::datatable(result, options = list(searching = FALSE, scrollX = T,lengthChange = FALSE))%>%
+      
+      formatStyle( 0, target= 'row',color = 'black', lineHeight='80%')
+  })
+  
+  # Barplot segun click
+  barplot_data<-reactive({
+    resultado_final
+  })
+  
+  output$Barplot<-renderPlot({
+    # Si no hay click, no hay na
+    event.data <- event_data("plotly_click", source = "Volcano")
+    print(event.data)
+    if(is.null(event.data)) { return(NULL)}
+    
+    # Seleccionamos la fila de interés segun el logFC
+    result2 <- barplot_data()[barplot_data()$logFC == event.data$x ,]
+    gene.id<-result2[,"geneID"]
+    gene.name<-result2[,"annotation"]
+    gene.expression<-result2[,c("LL_1","LL_2","HL_1","HL_2")]
+    
+    barplot.gene(gene.id,gene.name,gene.expression)
+    
+  })
+# parentesis y corchete del server          
 })
 
 # Run the application 
