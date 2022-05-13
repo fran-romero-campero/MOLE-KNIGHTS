@@ -12,6 +12,7 @@ library(cowplot, logical.return = T) # plots
 library(plotly) # interactive plot
 #library(ggrepel) #
 library(DT) # interactive table
+library(tidyr) # Para el PCA
 
 
 # Uploading data:
@@ -23,7 +24,12 @@ rownames(gene.expression) <- gene.ids
 log.gene.expression <-read.table(file = "data/log_gene-expression.tsv",header=T,as.is=T)
 de.results <-read.table(file = "data/de_results.tsv",header=T,as.is=T)
 resultado_final<-read.table(file = "data/resultado_final.tsv",header=T,as.is=T)
-# head(resultado_final)
+
+met.results <-read.table(file = "data/met_results.tsv",header = T, as.is = T)
+metabolomic.data.1<-read.table(file = "data/metabolomic_data_1",header = T, as.is = T)
+metabolomic.data.2<-read.table(file = "data/metabolomic_data_2",header = T, as.is = T)
+metabolites <-read.table(file = "data/metabolites.txt",as.is = T)
+metabolites <- metabolites$x
 
 
 # Functions:
@@ -50,7 +56,35 @@ barplot.gene <- function(gene.id,gene.name,gene.expression)
 }
 
 
+barplot_met <-function(met.name)
+{
+  current.metabolite <- met.name
+  hl.1 <- metabolomic.data.1[1:3,current.metabolite]
+  ll.1 <- metabolomic.data.1[4:6,current.metabolite]
+  mean.ll.1 <- mean(ll.1)
+  norm.hl.1 <- hl.1/mean.ll.1
+  norm.ll.1 <- ll.1/mean.ll.1
 
+  hl.2 <- metabolomic.data.2[1:3,current.metabolite]
+  ll.2 <- metabolomic.data.2[4:6,current.metabolite]
+  mean.ll.2 <- mean(ll.2)
+  norm.hl.2 <- hl.2/mean.ll.2
+  norm.ll.2 <- ll.2/mean.ll.2
+  
+
+  norm.ll <- c(norm.ll.1, norm.ll.2)
+  norm.hl <- c(norm.hl.1, norm.hl.2)
+  means <- c(mean(norm.ll), mean(norm.hl))
+  sds <- c(sd(norm.ll), sd(norm.hl))
+  
+  xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
+                  names.arg = c("LL","HL"),las=2,cex.names = 1.5,
+                  ylim=c(0,max(means+sds)*1.3),cex.axis = 1.5,lwd=3,
+                  main=current.metabolite,
+                  cex.main=2)
+  arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
+         code = 3,angle=90,lwd=2)
+}
 
 
 # Define UI
@@ -64,12 +98,13 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       radioButtons(inputId = "navigation_bar", width="100%",selected="home",
                    label="",
                    choices=c(
-                     "Home" = "home",
+                     "Sweet Home Alabama!" = "home",
                      "Relevant Information" = "intro",
                      "Global Transcriptome Statistics" = "globaltrans",
                      "Specific Gene Analysis" = "gene",
                      "Global Metabolomic Statistics" = "globalmet",
                      "Specific Metabolite Analysis" = "metabolite",
+                     "Total Integration" = "integration",
                      "Tutorials" = "tutorials",
                      "GitHub repository" = "github",
                      "Citation and Contact" = "citation"
@@ -80,6 +115,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                tags$h1(tags$b("Bona Nitens"), tags$br()),
                tags$h2("microALGAE Multiomic Data Exploration for MicroAlgae Transcriptomic and Metabolomic AnalysiS")),
       tags$br(),tags$br(),
+      # Home:
       conditionalPanel(condition = "input.navigation_bar == 'home'",
                        tags$div(align = "justify", "Welcome to", tags$b("Bona Nitens"),"a web based tool for the exploration of ", 
                                 tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), "data. Specially, this web tool focuses on the study of the early response to light stress
@@ -96,6 +132,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                tags$div(align ="center",img(src="optico.png", align = "center", width=600))
                # 
       ),
+      # Relevant Information:
       conditionalPanel(condition = "input.navigation_bar == 'intro'",
                        tags$h4(tags$b(align="right","Introduction to our case study:")),
                        tags$br(),
@@ -103,7 +140,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$i("Chlorophyta")," and",tags$i("Streptophyta"),".",tags$i("Chlorophyta"),"are primarily constituted by marine and freshwater green microalgae. In turn,", tags$i("Streptophyta")," are
                        divided into two different clades",tags$i("Charophyta"),"and",tags$i("Embryophyta"),". Whereas",tags$i("Embryophyta"),"comprises mainly land plants,",tags$i("Charophyta"),"are still 
                        considered algae with a preference for freshwater and with some facultative terrestrial species.  Present-day",tags$i("Charophyta")," are generally 
-                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),". Accordingly, the molecular 
+                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),tags$b("(Fig. 1"),". Accordingly, the molecular 
                        systems that potentially allowed this group of photosynthetic organisms to evolve towards terrestrial land plants are under intense analysis."),
                        tags$br(),
                        tags$div(align = "justify", "During this transition, the evolution of response molecular systems to",tags$b(" terrestrial environmental stresses")," was 
@@ -143,7 +180,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 biological replicates were considered for low and high light irradiance metabolomic data generation. Cells were collected, 
                                 washed with PBS  and stored at -80ºC. "),
                        tags$br(),
-                       tags$div(align = "justify", "METER VIDEO DE FRAN DE TIKTOK"),
+                       tags$div(align = "center", tags$video(src="experiment.mp4", type = "video/mp4",height ="400px", width="400px",controls="controls")),
                        tags$br(),
                        tags$div(align = "justify", "Using these cells, ",tags$b("RNA extraction"),"was performed to obtein purified RNA and the computational pipeline",tags$b("MARACAS"),"
                                 was used to determine differentially expressed genes according to a log2FC of ± 1 and a adjusted p-value or FDR 
@@ -156,10 +193,14 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 liquid chromatography) coupled to an UV-visible scanning spectrophotometer in case of carotenoids.")
                        # 
       ),
+      # Global Transcriptomic Statistics:
       conditionalPanel(condition = "input.navigation_bar == 'globaltrans'",
                        tags$div(align = "justify", "One of the main ways of responding to changes in the environment is by",tags$b("modifying gene expression"),"by varying the number of transcripts
                                 present in cells that conform a specific transcriptome. For this reason, the",tags$b("RNA-seq technique"),"was developed, a massive cDNA sequencing technique obtained through RNA 
                                 extraction using high-performance sequencing. In this case, the study focused on RNA-seq applied on eukaryotic coding RNA."),
+                       tags$br(),
+                       
+                       tags$h4(tags$b(align="right","Previous Mathematical/Computational Analysis:")),
                        tags$br(),
                        tags$div(align = "justify", "The previous mathematical/computational analysis was carried out according to the protocol established in the",tags$b("MARACAS pipeline (url)")," specialized
                                 in microalgae using the",tags$b("HISAT2 mapper"),", obtaining as a result a",tags$b("normalized continuous data matrix (url to download matrix) by FPKM"),"(Fragments Per Kilobase of
@@ -169,134 +210,205 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$div(align="center",plotlyOutput("distPlot"), tags$br(),
                                 tags$b("Figure 2."),"Boxplot before and after normalization. Please, hover over the plot for more information."),
                        tags$br(),tags$br(),
-                       tags$div(align="justify", "Moreover, this software allows to determinate",tags$b("differentially expressed genes"),". In this case, expression was detected in in",tags$b("68.4 %"),"of the 17290 genes in
-                       the current Klebsormidium genome annotation. According to a log2FC of ± 1 and a q-value or FDR (False Discobery Rate) threshold of 0.05,",tags$b("significant differential gene expression"),"
-                       was determined after three hours of high light treatment in",tags$b("7.84 %"),"of the entire Klebsormidium genome with respect to low light conditions. Specifically, we identified",tags$b("667 activates")," 
-                       and",tags$b(" 678 repressed genes.")),
+                       tags$div(align="justify","A quick way to explain the variability between samples is using a",tags$b("PCA (Principal Component Analysis)")," where the 3 main components are represented. In this case,
+                                it is observed that the first 2 components would be sufficient since they collect most of the variability of the data."),
+                       tags$br(),
+                       tags$div(align="center",plotlyOutput("PCA_trans")),
+                       
+                       tags$h4(tags$b(align="right","Differentially Expressed Genes:")),
+                       tags$br(),
+                       tags$div(align="justify", "Moreover, this software allows to determinate",tags$b("differentially expressed genes"),". In this case, expression was detected
+                       in in",tags$b("68.4 %"),"of the 17290 genes in
+                       the current Klebsormidium genome annotation. According to a log2FC of ± 1 and a q-value or FDR (False Discobery Rate) threshold of 0.05,"
+                       ,tags$b("significant differential gene expression"),"
+                       was determined after three hours of high light treatment in",tags$b("7.84 %"),"of the entire Klebsormidium genome with respect to low light conditions. 
+                       Specifically, we identified",tags$b("667 activates")," 
+                       and",tags$b(" 678 repressed genes (Fig. 3).")),
                        tags$br(),tags$br(),
                        tags$div(splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("Volcano"), plotOutput("Barplot")), tags$br(),align="center",
-                                tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information."),
+                                tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information and select any point of your interest."),
                        #tags$div(align="center",plotlyOutput("Volcano"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
                        #         tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information."),
                        tags$br(),
-                       DT::dataTableOutput("table")
-                       
+                       DT::dataTableOutput("table"),
+                       tags$br(),tags$br(),
+                       tags$h4(tags$b(align="right","Functional Enrichment Analysis:")),
+                       tags$br(),
+                       tags$div(align="justify","The software tool",tags$b("AlgaeFUN"),"(https://greennetwork.us.es/AlgaeFUN/) was used to perform",tags$b("functional enrichment analysis"),"
+                                based on",tags$b("Gene Ontology (GO)"),"terms, to identify the cellular components and biological processes significantly affected by high light,
+                                and",tags$b("Kyoto Encyclopedia of Genes and Genomes (KEGG)"),"pathways over the sets of differentially expressed genes",tags$b("Fig. 4.")),
+                       tags$br(),
+                       tags$div(align="justify","The proteins encoded by differentially expressed genes,",tags$b("both activated and repressed genes"),", were significantly localized
+                                in the",tags$b("chloroplast thylakoid membranes"),"indicating the initiation of a major chloroplast reprogramming. "),
+                       tags$br(),
+                       tags$div(align ="center",img(src="figure_4.png", align = "center", width=600), tags$br(),
+                                tags$b("Figure 4.")," GO terms enrichment."),
+                       tags$br(),
+                       tags$div(align="justify","Specifically, proteins encoded by",tags$b("repressed genes"),"were significantly associated with",tags$b("photosystems"),"and
+                                cellular structures present during",tags$b("cell division"),"such as condensed nuclear chromosomes and microtubules ",tags$b("Fig. 4."),". Accordingly,
+                                photosynthesis, hexose biosynthesis, cell cycle and DNA metabolism were significantly enriched processes in the repressed
+                                genes. This points to an arrest in the photosynthetic machinery and cell cycle progression as response to high light. "),
+                       tags$br(),
+                       tags$div(align="justify", "Proteins encoded by",tags$b("activated genes"),"are, in turn, significantly localized in cellular structures involved
+                                in ",tags$b("de novo protein biosybthesis")," such as preribosomes and translation initiation factor 3’ complex ",tags$b("Fig. 4."),". In particular, categories
+                                encompassing ribosome biogenesis, cytoplasmic translation initiation and protein folding were significantly enriched in the
+                                activated genes. Moreover, response to oxidative stress, response to high light intensity, tetraterpenoid and carotenoid
+                                metabolism were identified as significantly activated processes. This suggests an",tags$b("activation of repair and protective mechanisms")," 
+                                to damages caused by high light.")
                        # 
       ),
+      # Specific Gen Study:
       conditionalPanel(condition = "input.navigation_bar == 'gene'",
-                        tags$div(align="justify", tags$b("AlgaeFUN"), "allows researchers to perform", tags$b("functional annotation"), 
-                       "over gene sets.", tags$b("Gene Ontology (GO) enrichment"), "analysis as well as", tags$b("KEGG (Kyoto Encyclopedia
-                       of Genes and Genomes) pathway enrichment"), "analysis are supported. The gene set of interest can be obtained, for example,
-                       as the result of a differential expression analysis carried out using", tags$b("MARACAS."), " See our", tags$b("video tutorial"),
-                       "for details or follow the next steps to perform your analysis:",
-                                tags$ol(
-                                  tags$li("In the left panel choose your ", tags$b("microalgae")," of interest, the type of enrichment analysis 
-                                          to perform and the", tags$b("p-value threshold.")),
-                                  tags$li("Insert your ", tags$b("gene set"), " in the text box or load it from a file using the",
-                                          tags$b("Browse …"), " button. An example can be loaded by clicking on the ",  tags$b("Example"), " button. 
-                                          Click on", tags$b("Clear"), " button to remove the loaded gene set."),
-                                  tags$li("Users can choose between the default", tags$b("background"), " gene provided by AlgaeFUN of a custom one 
-                                          that can be specified."),
-                                  tags$li("Click on the ", tags$b("Have Fun"), " button to perform the specified functional enrichment analysis. The
-                                          results will be shown in the different tabs below.")
-                                 )
-      )),
-      
+                        tags$div(align="justify", "In the",tags$b("Global Transcriptomic Statistics")," tab, a global exploration of the transcriptomic data is performed, but it may be interesting
+                                 to study a single gene due to possible implications in different aspects. To do this, enter the",tags$b("gene identifier")," in the 
+                                 lower box and you will be able to see a barplot with the difference in gene expression between conditions."),
+                       tags$br(),tags$br(),
+                       textInput("gen", label="Please, choose a gen:", placeholder = ""),
+                       actionButton("do","Update Now!",icon ("sync")),
+                       tags$br(),tags$br(),
+                       plotOutput("barplot_selection")
+                       
+                       
+                      
+      ),
+      # Global Metabolomic Statistics:
       conditionalPanel(condition = "input.navigation_bar == 'globalmet'",
-                       tags$div(align="justify", tags$b("AlgaeFUN"), "allows researchers to perform", tags$b("annotation analysis 
-                                of genomic loci or regions."), "These are typically generated from", tags$b("ChIP-seq"), "studies 
-                                of the genome-wide distribution of", tags$b("epigenetic marks or transcription factor binding sites."),
-                                "Our tool", tags$b("MARACAS"), "can be used to perform this type of analysis. The set of marked genes 
-                                can be obtained as well as the distribution of the genomic loci overlapping specific genes parts. Also, individual marked genes 
-                                and the average signal level around the TSS (Transcription Start Site) and TES (Transcription
-                                End Site) over the complete set of marked genes can be visualized.", " See our", tags$b("video tutorial"),
-                                "for details or follow the next steps to perform your analysis:",
-                                tags$ol(
-                                  tags$li("In the left panel choose your ", tags$b("microalgae")," of interest, the gene", 
-                                          tags$b("promoter length"), "and the",  tags$b("gene parts"), "that will be considered
-                                          when determining the marked genes."),
-                                  tags$li("Insert in the text box your ", tags$b("set of genomic regions"), " as a table consisting 
-                                          of three tab-separated columns representing the chromosome, the start and end position of 
-                                          the regions. An example can be loaded by clicking on the ",  tags$b("Example"), " button. 
-                                          Click on", tags$b("Clear"), " button to remove the loaded gene set. Alternatively, using the",
-                                          tags$b("Browse..."), "button, the genomic regions can be uploaded from a file in BED format as 
-                                          described previously containing as least three columns. This file can be obained using our tool", 
-                                          tags$b("MARACAS.")),
-                                  tags$li("Optionally, users can upload the genome wide signal level of a epigenetic mark or transcription 
-                                          factor binding in a BigWig file. This file can be obained using our tool", tags$b("MARACAS.")),
-                                  tags$li("Click on the ", tags$b("Have Fun"), " button to perform the specified analysis. The
-                                          results will be shown in the different tabs below.")
-                                )
-                       )),
+                       tags$div(align="justify","",tags$b("Metabolomics"),"is understood as the discipline that analyzes the metabolites of a living organism and tries to find the interaction between
+                                metabolic pathways as well as quantify the largest amount of metabolites present. In the omics context, it offers an additional view on the
+                                characteristics of a metabolism, giving an idea of points of regulation and association of functions for unknown genes. In this case, a",tags$b("metabolic profile"),"
+                                was performed where interrelated compounds were studied, generating a specific",tags$b("metabolome")," for that sample using",tags$b("mass spectrometry.")),
+                       tags$br(),
+                       tags$h4(tags$b(align="right","Previous Mathematical/Computational Analysis:")),
+                       tags$br(),
+                       tags$div(align="justify","Analogously to the Global Transcriptomic Statistics section, the metabolic data were normalized. Specifically, from the data obtained by the
+                                mass spectrometer, the amount of metabolite present was determined according to the area under the curve of the peak obtained and assigned to each metabolite.
+                                They were relativized based on the total weight of the sample and the presence of a standard compound: paracetamol."),
+                       tags$br(),tags$br(),
+                       tags$h4(tags$b(align="right","Differentially Expressed Metabolites:")),
+                       tags$br(),
+                       tags$div(align="justify","Six independent biological replicates were
+                                considered for both, high and low light conditions. We detected 69 different primary and secondary metabolites including most amino acids and some phytohormones.
+                                Significant differentially abundant metabolites were identified by performing the non-parametric Wilcoxon test using a p-value threshold
+                                of 0.05. We found 12 significantly more abundant and 8 less abundant metabolites under high light when compared to low light (Figure 5). For instance, under
+                                high light, we detected significant changes in specific carotenoids, accumulation of the amino acid tryptophan and the phytohormone indole-3- acetic acid (IAA)"),
+                       tags$br(),tags$br(),
+                       tags$div(splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("Volcano_met"), plotOutput("Barplot_met")), tags$br(),align="center",
+                                tags$b("Figure 5."),"Volcano plot of Metabolites. Please, hover over the plot for more information and select any point of your interest."),
+                       tags$br(),
+                       DT::dataTableOutput("table_met"),
+                       tags$br()
+                       
+                       ),
+      
+      # Specific Metabolite Study:
       conditionalPanel(condition = "input.navigation_bar == 'metabolite'",
-                       tags$div(align="justify", tags$b("AlgaeFUN"), "allows researchers to perform", tags$b("annotation analysis 
-                                of genomic loci or regions."), "These are typically generated from", tags$b("ChIP-seq"), "studies 
-                                of the genome-wide distribution of", tags$b("epigenetic marks or transcription factor binding sites."),
-                                "Our tool", tags$b("MARACAS"), "can be used to perform this type of analysis. The set of marked genes 
-                                can be obtained as well as the distribution of the genomic loci overlapping specific genes parts. Also, individual marked genes 
-                                and the average signal level around the TSS (Transcription Start Site) and TES (Transcription
-                                End Site) over the complete set of marked genes can be visualized.", " See our", tags$b("video tutorial"),
-                                "for details or follow the next steps to perform your analysis:",
-                                tags$ol(
-                                  tags$li("In the left panel choose your ", tags$b("microalgae")," of interest, the gene", 
-                                          tags$b("promoter length"), "and the",  tags$b("gene parts"), "that will be considered
-                                          when determining the marked genes."),
-                                  tags$li("Insert in the text box your ", tags$b("set of genomic regions"), " as a table consisting 
-                                          of three tab-separated columns representing the chromosome, the start and end position of 
-                                          the regions. An example can be loaded by clicking on the ",  tags$b("Example"), " button. 
-                                          Click on", tags$b("Clear"), " button to remove the loaded gene set. Alternatively, using the",
-                                          tags$b("Browse..."), "button, the genomic regions can be uploaded from a file in BED format as 
-                                          described previously containing as least three columns. This file can be obained using our tool", 
-                                          tags$b("MARACAS.")),
-                                  tags$li("Optionally, users can upload the genome wide signal level of a epigenetic mark or transcription 
-                                          factor binding in a BigWig file. This file can be obained using our tool", tags$b("MARACAS.")),
-                                  tags$li("Click on the ", tags$b("Have Fun"), " button to perform the specified analysis. The
-                                          results will be shown in the different tabs below.")
-                                )
-                       )),
-
+                       tags$div(align="justify", "In the",tags$b("Global Metabolomic Statistics")," tab, a global exploration of the metabolomic data is performed, but it may be interesting
+                                 to study a single metabolite due to possible implications in different aspects. To do this, enter the",tags$b("metabolite name")," in the 
+                                 lower box and you will be able to see a barplot with the difference in abundance between conditions."),
+                       tags$br(),tags$br(),
+                       selectInput("metabolite",label="Please, choose a metabolite:",choices = metabolites,selected = "Arginine"),
+                       actionButton("do_met","Update Now!",icon ("sync")),
+                       tags$br(),tags$br(),
+                       plotOutput("barplot_selection_metabolites")
+                       ),
+      
+      # Total integration
+      conditionalPanel(condition = "input.navigation_bar == 'integration'",
+                       tags$div(align="justify","Until now we have explored information from different omics separately, but the
+                                real insight lies in the integration of both. Bioinformatics offers the possibility of obtaining
+                                a more complete view of the behavior of biological systems, as will be seen in the following results."),
+                       tags$br(),tags$br(),
+                       tags$h4(tags$b(align="right","An activation of the carotenoid biosynthesis β-branch and xantophyll cycle is observed:")),
+                       tags$br(),
+                       tags$div(align="justify", "Here, we present an integrated 
+                       transcriptomic and metabolomic analysis of this specific photoprotective response to high light in 
+                       Klebsormidium",tags$b("(Figure 6)"),". The gene encoding the first enzyme in the carotenoid pathway and the 
+                       main rate-limiting step, phytoene synthase (PSY, kfl00019_0320) was 1.53 fold activated after three 
+                       hours of high light treatment. Similarly, the genes encoding the next enzymes in the pathway 
+                       producing lycopene, phytoene desaturase (PDS, kfl00103_0130) and ζ-carotene desaturase (ZDS, 
+                       kfl00496_0070), were 1.88 and 1.64 fold activated respectively. At this point carotenoid biosynthesis 
+                       bifurcates into the ε-branch leading to lutein and the β–branch proceeding to β–carotene and the 
+                       xanthophyll cycle. These two branches showed antagonist regulation in the response to high light in 
+                       Klebsormidium. On the one hand, a strong gene repression of 7.49 fold was found for the enzyme 
+                       funneling lycopene into the ε-branch, lycopene epsilon cyclase (LCYε, kfl00536_0070). On the other hand, simultaneously, a strong gene 
+                       activation of 2.52 fold was detected for the enzyme channeling lycopene into the β–branch, lycopene 
+                       beta cyclase (LCYβ, kfl00003_0600) and of 2.24 fold for the enzyme β–carotene hydroxylase (BCH, 
+                       kfl00515_0050) that converts β–carotene into zeaxanthin. Although, β–carotene content was similar under low and high light
+                       conditions, significant changes were found in the carotenoids constituting the xanthophyll cycle. 
+                       Violaxanthin content decreased 4.73 fold whereas antheraxanthin and zeaxanthin contents were 
+                       increased 3.44 and 41.5 fold respectively under high light when compared to low light. Accordingly, 
+                       the gene encoding the enzyme involved in the xanthophyll cycle, violaxanthin de-epoxidase (VDE, 
+                       kfl00604_0070) converting violaxanthin into antheraxanthin and zeaxanthin was activated 1.86 fold.
+                       Furthermore, the gene encoding zeaxanthin epoxidase (ZEP, kfl00092_0060) that catalyzes the
+                       synthesis of violaxanthin from zeaxanthin and antheraxanthin was 3.84 fold repressed under high 
+                       light."),
+                       tags$br(),
+                       tags$div(align ="center",img(src="figure6.png", align = "center", width=600), tags$br(),
+                                tags$b("Figure 6.")," Carotenoids."),
+                       tags$br(),
+                       tags$div(align="justify","In the xanthophyll cycle, the interconversion of violaxanthin into antheraxanthin and 
+                       zeaxanthin, constitutes one of the major photoprotective mechanism in Embryophyta and 
+                       Chlorophyta. High light induces the mobilization of violaxanthin to zeaxanthin whereas low light or 
+                       darkness produce the reverse reaction (Goss and Jakob, 2010; Latowski et al., 2011). De-epoxidation 
+                       of violaxanthin to zeaxanthin enhances dissipation of excess excitation energy (non-photochemical 
+                       quenching, NPQ) in the photosystem II (PSII) antenna, thereby preventing inactivation and damage 
+                       to the photosynthetic apparatus. NPQ is considered a fundamental mechanism for Streptophyta 
+                       adaptation to terrestrial habitats (Pierangelini et al., 2017). Here, we specifically show that the 
+                       xanthophyll cycle is part of the early transcriptomic and metabolomic response to high light intensity 
+                       in the Charophyta Klebsormidium."),
+                       tags$br(),tags$br(),
+                       tags$h4(tags$b(align="right","An activation of the carotenoid biosynthesis β-branch and xantophyll cycle is observed:")),
+                       tags$br()
+                       
+        
+      ),
+      
+      # Github
       conditionalPanel(condition = "input.navigation_bar == 'github'",
-                       tags$div(align = "justify", tags$b("AlgaeFUN,"), "is entirely developed using 
+                       tags$div(align="justify", tags$b("Bona Nitens,"), "is entirely developed using 
         the R package", tags$b( tags$a(href="https://shiny.rstudio.com/", "shiny.")), "The 
         source code is released under", tags$b("GNU General Public License v3.0"), "and is hosted at",
-                                tags$b("GitHub."), "If you experience any problem using AlgaeFUN please create an", 
+                                tags$b("GitHub."), "If you experience any problem using Bona Nitens please create an", 
                                 tags$b(tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN/issues","issue")), 
                                 "in GitHub and we will address it."),
                        tags$div(align="center",tags$h1(tags$b(tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN",
-                                                                     "AlgaeFUN at GitHub")))),
+                                                                     "Bona Nitens at GitHub")))),
                        tags$br(),
+                       tags$br(),
+                       tags$div(align="justify","Here we present some of the other main programs that we have used in
+                                this exploratory tool:"),
+                       tags$br(),
+                       tags$div(align = "justify", tags$b("AlgaeFUN,"), "is entirely developed using 
+        the R package", tags$b( tags$a(href="https://shiny.rstudio.com/", "shiny.")), "The 
+        source code is released under", tags$b("GNU General Public License v3.0"), "and is hosted at",
+                                tags$b("GitHub.")),
+                       tags$div(align="center",tags$h4(tags$b(tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN",
+                                                                     "AlgaeFUN at GitHub")))),
                        tags$br(),
                        
                        tags$div(align = "justify", tags$b("MARACAS,"), "is developed using bash scripting and several 
         bioconductor R packages. The source code is released under", tags$b("GNU General Public License v3.0"), "and is hosted at",
-                                tags$b("GitHub."), "If you experience any problem using AlgaeFUN please create an", 
-                                tags$b(tags$a(href="https://github.com/fran-romero-campero/MARACAS/issues","issue")), 
-                                "in GitHub and we will address it."),
-                       tags$div(align="center",tags$h1(tags$b(tags$a(href="https://github.com/fran-romero-campero/MARACAS",
-                                                                     "MARACAS at GitHub")))),
+                                tags$b("GitHub.")), 
+                       tags$div(align="center",tags$h4(tags$b(tags$a(href="https://github.com/fran-romero-campero/MARACAS",
+                                                                     "MARACAS at GitHub"))))
       ),
-      
+      # Citations
       conditionalPanel(condition = "input.navigation_bar == 'citation'",
-                       tags$div(align = "justify", "We are strongly committed to", tags$b("open access software"), 
-                                "and", tags$b("open science."),"Following our philosophy we have deposited our GitHub code 
-                       into", tags$a(href="https://zenodo.org/record/4754516#.YJxLPSaxUws", target="_blank",tags$b("Zenodo")), ", a
-                       general-purpose open-access repository developed under the", 
-                                tags$a(href="https://www.openaire.eu/", target="_blank", tags$b("European OpenAIRE program.")), "Meanwhile we publish 
-                       our work in a journal if you find", tags$b("AlgaeFUN with MARACAS"), "useful in your research we would be most grateful if you cite 
-                       our GitHub repository with a,", tags$b("DOI"),  "as follows:",
+                       tags$div(align = "justify","Recently we published
+                       our work in a journal if you find", tags$b("this information"), "useful in your research we would be most grateful if you cite 
+                       our GitHub repository with a,", tags$b("DOI"), "as follows:",
                                 tags$br(),
                                 tags$br(),
-                                tags$div(tags$b("Romero-Losada, A.B., Arvanitidou, C., de los Reyes, P., 
-                                García-González, M., Romero-Campero, F.J. (2021) AlgaeFUN with MARACAS, microAlgae FUNctional 
-                                enrichment tool for MicroAlgae RnA-seq and Chip-seq AnalysiS v1.0, Zenodo, doi:10.5381/zenodo.4754516 doi:10.5381/zenodo.4752818"))),
+                                tags$div(tags$b("Serrano-Pérez E, Romero-Losada AB, Morales-Pineda M, García-Gómez ME, Couso I, García-González M
+                                and Romero-Campero FJ (2022) Transcriptomic and Metabolomic Response to High Light in the Charophyte Alga Klebsormidium nitens.
+                                                Front. Plant Sci. 13:855243. doi: 10.3389/fpls.2022.855243"))),
                        
                        tags$br(),
                        tags$br(),
-                       #tags$div(align="center", img(src='smiley.png', align = "center", width=200,hight=200)),
                        tags$br()
                        
       ),
-      
+      # Tutorial
       conditionalPanel(condition = "input.navigation_bar == 'tutorials'",
                        tags$div(align="center",uiOutput("video_tutorial")),
                        tags$div(align = "justify", 
@@ -315,24 +427,13 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       tags$br(),tags$br(),tags$br(),
       img(src='logo_csic.jpg', align = "center", width=100),
       tags$br(),tags$br(),
-      tags$div(align="center",width=60,
-               HTML("<script type=\"text/javascript\" src=\"//rf.revolvermaps.com/0/0/8.js?i=5jamj0c2y0z&amp;m=7&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33\" async=\"async\"></script>"))
-    )
+      )
   ),
 
   
   tags$br(),tags$br(),
   
-  #Interface where the user can choose his/her preferencies, separated by columns
-  fluidRow(
-      column(width = 4,
-      
-     conditionalPanel(condition = "input.navigation_bar == 'basic'",
-                      tags$div(align="center",uiOutput("boxplot")),
-                      fileInput(inputId = "data_matrix",label = "Data Matrix:", width= "100%")
-        ),
-      )
-  ),
+  
 ))
       
 
@@ -417,6 +518,73 @@ server <- shinyServer(function(input, output, session) {
       # layout(title = 'Before and After Normalization') %>%  
   })
   
+# PCA trans
+  output$PCA_trans<-renderPlotly({
+    pca_all_samples <- prcomp(x=t(log.gene.expression),center = T,scale. = F)
+    PCs <- as.data.frame(pca_all_samples$x)
+    
+    x_axis <- 1
+    y_axis <- 2
+    z_axis <- 3
+    
+    targets <- colnames(log.gene.expression) # samples
+    targets <- data.frame(targets) # samples como df
+    targets <- separate(targets, col = targets, sep = '_', into = c('condition','replicate')) # Separamos la condicion de la replica
+    targets$sample <- colnames(log.gene.expression) # columna con la muestra completa
+    
+    color_variable <- targets$condition
+    id <- targets$sample
+    
+    xlab <- paste0('PC_',x_axis,'(', round((pca_all_samples$sdev^2)[x_axis]/sum(pca_all_samples$sdev^2)*100, 2), '%)')
+    ylab <- paste0('PC_',y_axis,'(', round((pca_all_samples$sdev^2)[y_axis]/sum(pca_all_samples$sdev^2)*100, 2), '%)')
+    zlab <- paste0('PC_',z_axis,'(', round((pca_all_samples$sdev^2)[z_axis]/sum(pca_all_samples$sdev^2)*100, 2), '%)')
+    
+    trace <- list()
+    i=1
+    
+    for (x in unique(color_variable)){
+      
+      trace[[i]] <- list(mode="markers", 
+                         name = x,
+                         type = "scatter3d",
+                         x = PCs[,1][color_variable==x],
+                         y = PCs[,2][color_variable==x],
+                         z = PCs[,3][color_variable==x],
+                         text = id[color_variable==x]
+      )
+      
+      i <- i + 1
+    }
+    
+    layout <- list(
+      scene = list(
+        xaxis = list(
+          title = xlab, 
+          showline = FALSE
+        ), 
+        yaxis = list(
+          title = ylab, 
+          showline = FALSE
+        ), 
+        zaxis = list(
+          title = zlab, 
+          showline = FALSE
+        )
+      ), 
+      title = "PCA Transcriptomic Data"
+    )
+    
+    # Creamos el plot interactivo vacío
+    p <- plot_ly()
+    for (x in trace){
+      p <- add_trace(p, mode=x$mode, name=x$name, type=x$type, x=x$x, y=x$y, z=x$z, text=x$text)
+    }
+    p <- layout(p, scene=layout$scene, title=layout$title)
+    
+    
+  })
+  
+  
   
   
 # Volcano plot
@@ -486,6 +654,106 @@ server <- shinyServer(function(input, output, session) {
     barplot.gene(gene.id,gene.name,gene.expression)
     
   })
+  
+  # Seleccion de barplots
+  gen_name<-eventReactive( input$do ,{
+    input$gen
+  })
+  output$barplot_selection<-renderPlot({
+    
+    # Seleccionamos la fila de interés segun el logFC
+    # kfl00093_0070
+    # kfl00458_0030
+    # kfl00361_0130
+    if(gen_name()!="")
+    {
+      result2<-resultado_final[resultado_final$gene_name== gen_name(),]
+      
+      gene.id<-result2[,"geneID"]
+      gene.name<-result2[,"annotation"]
+      gene.expression<-result2[,c("LL_1","LL_2","HL_1","HL_2")]
+      
+      barplot.gene(gene.id,gene.name,gene.expression)
+    }
+    
+  })
+  
+# Volcano Metabolite
+  volcol <- c(met.brewer("Egypt",3)[1], met.brewer("Egypt",3)[2],"grey33")
+  names(volcol) <- c("activado","reprimido","ns")
+  
+  output$Volcano_met <- renderPlotly({
+    # Volcano plot estatico con ggplot2
+    volcano_met <- ggplot(as.data.frame(met.results), aes(x=metabolites.fold.change, y=-log10(metabolites.p.value),
+                                                          color=met_type,
+                                                          text= paste0("</br> Metabolilte: " ,met_name))) +
+      geom_point(size = 1.2) +
+      scale_colour_manual(values = volcol) + 
+      theme(legend.position = "none",
+            panel.background = element_rect(fill = "white"),
+            panel.grid.major = element_line(colour = "white"),
+            panel.grid.minor = element_line(colour = "white"),
+            axis.line.x.bottom = element_line(color = 'black'),
+            axis.line.y.left   = element_line(color = 'black'),
+            panel.border = element_blank(),
+            plot.title = element_text(hjust = 0.5,size = 15)) + 
+      ggtitle("Volcano plot from Metabolites")+ 
+      labs(x = "logFC",y="adj.P.Value") +
+      xlim(-1, 3) +
+      geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey33",size=0.3)
+    
+    
+    # # Volcano interactivo con plotly
+    Volcano_met <- ggplotly(volcano_met,x = ~logFC, y = ~adj.P.Value,
+                                    tooltip = "text",
+                                    width = 400, height = 300, source = "Volcano_met")
+  })
+  
+  # Tabla que salga con el click
+  data_met <- reactive({
+    met.results
+  })
+  output$table_met<- DT::renderDataTable({
+    # Si no hay click, no hay na
+    event.data_met <- event_data("plotly_click", source = "Volcano_met")
+    print(event.data_met)
+    if(is.null(event.data_met)) { return(NULL)}
+    # Con click sale la  fila con informacion de ese gen
+    result_met <- data_met()[data_met()$metabolites.fold.change == event.data_met$x ,]
+    DT::datatable(result_met, options = list(searching = FALSE, scrollX = T,lengthChange = FALSE))%>%
+
+      formatStyle( 0, target= 'row',color = 'black', lineHeight='80%')
+  })
+  
+  # # Barplot metabolitos segun click
+  barplot_data_met<-reactive({
+    met.results
+  })
+
+  output$Barplot_met<-renderPlot({
+    # Si no hay click, no hay na
+    event.data_met <- event_data("plotly_click", source = "Volcano_met")
+    print(event.data_met)
+    if(is.null(event.data_met)) { return(NULL)}
+
+    # Seleccionamos la fila de interés segun el logFC de los metabolitos
+    result_met <- barplot_data_met()[barplot_data_met()$metabolites.fold.change == event.data_met$x ,]
+    met_name<-result_met[,"met_name"]
+    barplot_met(met_name)
+
+  })
+  
+  # Seleccion de barplots metabolites
+  met_name_bar<-eventReactive( input$do_met ,{
+    input$metabolite
+  })
+  
+  output$barplot_selection_metabolites<-renderPlot({
+      barplot_met(met_name_bar())
+  })
+  
+   
+  
 # parentesis y corchete del server          
 })
 
