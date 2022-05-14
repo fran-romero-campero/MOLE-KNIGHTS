@@ -93,18 +93,18 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
   fluidRow(
     column(
       width = 2,
-      img(src='logo_1.png', align = "center", width=200),
+      img(src='confocal.png', align = "center", width=150),
       tags$br(),
       radioButtons(inputId = "navigation_bar", width="100%",selected="home",
                    label="",
                    choices=c(
                      "Sweet Home Alabama!" = "home",
-                     "Relevant Information" = "intro",
+                     "Previous Research Information" = "intro",
                      "Global Transcriptome Statistics" = "globaltrans",
                      "Specific Gene Analysis" = "gene",
                      "Global Metabolomic Statistics" = "globalmet",
                      "Specific Metabolite Analysis" = "metabolite",
-                     "Total Integration" = "integration",
+                     "Omics... Assemble!" = "integration",
                      "Tutorials" = "tutorials",
                      "GitHub repository" = "github",
                      "Citation and Contact" = "citation"
@@ -112,12 +112,13 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
     column(
       width = 8,
       tags$div(align = "center", 
-               tags$h1(tags$b("Bona Nitens"), tags$br()),
-               tags$h2("microALGAE Multiomic Data Exploration for MicroAlgae Transcriptomic and Metabolomic AnalysiS")),
+               tags$h1(tags$b("Zzz... BONA Nitens!"), tags$br()),
+               tags$h2("Best multiOmic exploratioN of trAnscriptomic
+                       and metabolomic data in klebsormidium Nitens")),
       tags$br(),tags$br(),
       # Home:
       conditionalPanel(condition = "input.navigation_bar == 'home'",
-                       tags$div(align = "justify", "Welcome to", tags$b("Bona Nitens"),"a web based tool for the exploration of ", 
+                       tags$div(align = "justify", "Welcome to", tags$b("BONA Nitens"),"a web based tool for the exploration of ", 
                                 tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), "data. Specially, this web tool focuses on the study of the early response to light stress
                                 in the microalgae specie",tags$i("Klebsormidium nitens"), "as a trigger for the development of different protection mechanisms at the molecular and 
                                 celular level. We present an integrative analysis between these transcriptomic and metabolic data to characterize
@@ -140,7 +141,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$i("Chlorophyta")," and",tags$i("Streptophyta"),".",tags$i("Chlorophyta"),"are primarily constituted by marine and freshwater green microalgae. In turn,", tags$i("Streptophyta")," are
                        divided into two different clades",tags$i("Charophyta"),"and",tags$i("Embryophyta"),". Whereas",tags$i("Embryophyta"),"comprises mainly land plants,",tags$i("Charophyta"),"are still 
                        considered algae with a preference for freshwater and with some facultative terrestrial species.  Present-day",tags$i("Charophyta")," are generally 
-                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),tags$b("(Fig. 1"),". Accordingly, the molecular 
+                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),tags$b("(Fig. 1)"),". Accordingly, the molecular 
                        systems that potentially allowed this group of photosynthetic organisms to evolve towards terrestrial land plants are under intense analysis."),
                        tags$br(),
                        tags$div(align = "justify", "During this transition, the evolution of response molecular systems to",tags$b(" terrestrial environmental stresses")," was 
@@ -151,7 +152,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 data for  ",tags$i("Charophyta")," under specific conditions relevant to the terrestralization process is preventing the full characterization of
                                 the molecular systems that promoted the transition to the first land plants. "),
                        tags$br(),tags$br(),
-                       tags$div(align ="center",img(src="filo.png", align = "center", width=600), tags$br(),
+                       tags$div(align ="center",img(src="phylogeny.png", align = "center", width=800), tags$br(),
                                 tags$b("Figure 1."),"Phylogenetic tree of the evolution of green algae."),
                        tags$br(),tags$br(),
                        tags$div(align = "justify", "In this study, we have chosen the freshwater facultative terrestrial ",tags$i("Charophyta Klebsormidium nitens")," as",tags$b("model organism"),"
@@ -182,9 +183,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$br(),
                        tags$div(align = "center", tags$video(src="experiment.mp4", type = "video/mp4",height ="400px", width="400px",controls="controls")),
                        tags$br(),
-                       tags$div(align = "justify", "Using these cells, ",tags$b("RNA extraction"),"was performed to obtein purified RNA and the computational pipeline",tags$b("MARACAS"),"
-                                was used to determine differentially expressed genes according to a log2FC of ± 1 and a adjusted p-value or FDR 
-                                (False Discobery Rate) threshold of 0.05. he software tool",tags$b("AlgaeFUN"),"was used to perform functional 
+                       tags$div(align = "justify", "Using these cells, ",tags$b("RNA extraction"),"was performed to obtein purified RNA and the computational pipeline",
+                                tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","MARACAS"),
+                                "was used to determine differentially expressed genes according to a log2FC of ± 1 and a adjusted p-value or FDR 
+                                (False Discobery Rate) threshold of 0.05. he software tool",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","AlgaeFun"),"was used to perform functional 
                                 enrichment analysis based on Gene Ontology (GO) terms and Kyoto Encyclopedia of Genes and Genomes (KEGG) pathways over the sets of differentially
                                 expressed genes."),
                        tags$br(),
@@ -202,8 +204,8 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        
                        tags$h4(tags$b(align="right","Previous Mathematical/Computational Analysis:")),
                        tags$br(),
-                       tags$div(align = "justify", "The previous mathematical/computational analysis was carried out according to the protocol established in the",tags$b("MARACAS pipeline (url)")," specialized
-                                in microalgae using the",tags$b("HISAT2 mapper"),", obtaining as a result a",tags$b("normalized continuous data matrix (url to download matrix) by FPKM"),"(Fragments Per Kilobase of
+                       tags$div(align = "justify", "The previous mathematical/computational analysis was carried out according to the protocol established in the",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","MARACAS")," specialized
+                                in microalgae using the",tags$b("HISAT2 mapper"),", obtaining as a result a",tags$b("normalized continuous data matrix by FPKM"),"(Fragments Per Kilobase of
                                 transcripts of mapped reads) that normalizes by the length of the read and by the number of millions of reads. In addition, it applies a second upper quantile
                                 normalization and log2 transformation that, as can be seen",tags$b("(Fig. 2)"),", improves the distribution of the data."),
                        tags$br(),tags$br(),
@@ -227,14 +229,12 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$br(),tags$br(),
                        tags$div(splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("Volcano"), plotOutput("Barplot")), tags$br(),align="center",
                                 tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information and select any point of your interest."),
-                       #tags$div(align="center",plotlyOutput("Volcano"), tags$br(),tags$br(),tags$br(),tags$br(),tags$br(),
-                       #         tags$b("Figure 3."),"Volcano plot of DEGs. Please, hover over the plot for more information."),
                        tags$br(),
                        DT::dataTableOutput("table"),
                        tags$br(),tags$br(),
                        tags$h4(tags$b(align="right","Functional Enrichment Analysis:")),
                        tags$br(),
-                       tags$div(align="justify","The software tool",tags$b("AlgaeFUN"),"(https://greennetwork.us.es/AlgaeFUN/) was used to perform",tags$b("functional enrichment analysis"),"
+                       tags$div(align="justify","The software tool",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","AlgaeFUN")," was used to perform",tags$b("functional enrichment analysis"),"
                                 based on",tags$b("Gene Ontology (GO)"),"terms, to identify the cellular components and biological processes significantly affected by high light,
                                 and",tags$b("Kyoto Encyclopedia of Genes and Genomes (KEGG)"),"pathways over the sets of differentially expressed genes",tags$b("Fig. 4.")),
                        tags$br(),
@@ -250,7 +250,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 genes. This points to an arrest in the photosynthetic machinery and cell cycle progression as response to high light. "),
                        tags$br(),
                        tags$div(align="justify", "Proteins encoded by",tags$b("activated genes"),"are, in turn, significantly localized in cellular structures involved
-                                in ",tags$b("de novo protein biosybthesis")," such as preribosomes and translation initiation factor 3’ complex ",tags$b("Fig. 4."),". In particular, categories
+                                in ",tags$b("de novo protein biosybthesis")," such as preribosomes and translation initiation factor 3’ complex ",tags$b("Fig. 4.")," In particular, categories
                                 encompassing ribosome biogenesis, cytoplasmic translation initiation and protein folding were significantly enriched in the
                                 activated genes. Moreover, response to oxidative stress, response to high light intensity, tetraterpenoid and carotenoid
                                 metabolism were identified as significantly activated processes. This suggests an",tags$b("activation of repair and protective mechanisms")," 
@@ -316,26 +316,17 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       conditionalPanel(condition = "input.navigation_bar == 'integration'",
                        tags$div(align="justify","Until now we have explored information from different omics separately, but the
                                 real insight lies in the integration of both. Bioinformatics offers the possibility of obtaining
-                                a more complete view of the behavior of biological systems, as will be seen in the following results."),
+                                a more complete view of the behavior of biological systems, as will be seen in the following results.
+                                If you are interested in more details, you can get it in our complete article."),
                        tags$br(),tags$br(),
                        tags$h4(tags$b(align="right","An activation of the carotenoid biosynthesis β-branch and xantophyll cycle is observed:")),
                        tags$br(),
                        tags$div(align="justify", "Here, we present an integrated 
                        transcriptomic and metabolomic analysis of this specific photoprotective response to high light in 
-                       Klebsormidium",tags$b("(Figure 6)"),". The gene encoding the first enzyme in the carotenoid pathway and the 
-                       main rate-limiting step, phytoene synthase (PSY, kfl00019_0320) was 1.53 fold activated after three 
-                       hours of high light treatment. Similarly, the genes encoding the next enzymes in the pathway 
-                       producing lycopene, phytoene desaturase (PDS, kfl00103_0130) and ζ-carotene desaturase (ZDS, 
-                       kfl00496_0070), were 1.88 and 1.64 fold activated respectively. At this point carotenoid biosynthesis 
-                       bifurcates into the ε-branch leading to lutein and the β–branch proceeding to β–carotene and the 
-                       xanthophyll cycle. These two branches showed antagonist regulation in the response to high light in 
-                       Klebsormidium. On the one hand, a strong gene repression of 7.49 fold was found for the enzyme 
-                       funneling lycopene into the ε-branch, lycopene epsilon cyclase (LCYε, kfl00536_0070). On the other hand, simultaneously, a strong gene 
-                       activation of 2.52 fold was detected for the enzyme channeling lycopene into the β–branch, lycopene 
-                       beta cyclase (LCYβ, kfl00003_0600) and of 2.24 fold for the enzyme β–carotene hydroxylase (BCH, 
-                       kfl00515_0050) that converts β–carotene into zeaxanthin. Although, β–carotene content was similar under low and high light
-                       conditions, significant changes were found in the carotenoids constituting the xanthophyll cycle. 
-                       Violaxanthin content decreased 4.73 fold whereas antheraxanthin and zeaxanthin contents were 
+                       Klebsormidium",tags$b("(Figure 6)"),". As can be seen, carotenoid biosynthesis is favored for the generation of beta-carotenoid
+                       by the activation of several enzymes of the pathway, while the ε-branch leading to lutein is repressed. Although, β–carotene
+                       content was similar under low and high light conditions, the cycle of xanthophylls towards the formation of zeaxanthin from
+                       violaxanthin is favored. Violaxanthin content decreased 4.73 fold whereas antheraxanthin and zeaxanthin contents were 
                        increased 3.44 and 41.5 fold respectively under high light when compared to low light. Accordingly, 
                        the gene encoding the enzyme involved in the xanthophyll cycle, violaxanthin de-epoxidase (VDE, 
                        kfl00604_0070) converting violaxanthin into antheraxanthin and zeaxanthin was activated 1.86 fold.
@@ -357,8 +348,43 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        xanthophyll cycle is part of the early transcriptomic and metabolomic response to high light intensity 
                        in the Charophyta Klebsormidium."),
                        tags$br(),tags$br(),
-                       tags$h4(tags$b(align="right","An activation of the carotenoid biosynthesis β-branch and xantophyll cycle is observed:")),
-                       tags$br()
+                       tags$h4(tags$b(align="right","Chloroplast retrograde signaling triggered by oxidative stress and protein misfolding is 
+                                      identified as a response to high light:")),
+                       tags$br(),
+                       tags$div(align="justify","Under high light conditions exceeding photosynthetic capacity, production of harmful reactive 
+                       oxygen species (ROS) is unavoidable associated with electron transport in the photosystems. Excess 
+                       electron leakage to molecular oxygen and incomplete water oxidation produce singlet oxygen, 
+                       superoxide, hydrogen peroxide and hydroxyl radical (Pospíšil, 2016). This 
+                       triggers a signaling cascade communicating the chloroplast state to the nucleus termed retrograde 
+                       signaling that ultimately induces the expression of nuclear genes. The evolution of this system has played a central
+                       role in plant terrestralization (Zhao et al., 2019; Calderon and Strand, 2021)."),
+                       tags$br(),
+                       tags$div(align="justify","
+                       Indeed, response to oxidative stress 
+                       was one of the most significant GO term in our functional enrichment analysis over the activated 
+                       genes in a response to high light treatment in Klebsormidium", tags$b("Figure 7.")," Under 
+                       these conditions proteins suffer oxidative damage specifically but not limited to the active thiol 
+                       groups of cysteine residues, which are oxidized to disulfide bonds (Cejudo et al., 2021). This 
+                       produces major modifications in protein structure that can lead to misfolding and loss of function. 
+                       The accumulation in the chloroplast of aberrant misfolded proteins also contributes to initiate 
+                       retrograde signaling (Dogra et al., 2019a). Moreover, we found the activation of multiple chloroplast
+                       targeted chaperones, co-chaperones and chaperonins that would contribute to restore misfolded proteins."),
+                       tags$br(),
+                       tags$div(align="center",img(src="figure7.png", align = "center", width=600), tags$br(),
+                                tags$b("Figure 7.")," Chloroplasts."),
+                       tags$br(),
+                       tags$div(align="justify","Concomitant to the activation of protein repair mechanisms we found significant activation of 
+                       ribosome biogenesis and cytoplasmic translation initiation. These strongly activated processes are required for de novo 
+                       protein synthesis and, together with the previously described protein repair mechanisms, constitute 
+                       part of the response to high light in Klebsormidium, contributing to maintain proteome homeostasis under this stress.
+                       Besides, the retrograde signaling pathways induced by ROS and aberrant misfolded proteins discussed above, there exists
+                       another pathway regulated by the accumulation of 3′- phosphoadenosine-5′-phosphate (PAP). The inositol polyphosphate 
+                       1-phosphatase SAL1 removes PAP preventing its accumulation. The gene encoding this enzyme kfl00096_0240 was 2 fold 
+                       repressed indicating a possible accumulation of PAP and an activation of the SAL1-PAP retrograde signaling pathway,
+                       as a response to high light intensity in Klebsormidium.")
+      
+                       
+                       
                        
         
       ),
