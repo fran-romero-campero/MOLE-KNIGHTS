@@ -93,7 +93,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
   fluidRow(
     column(
       width = 2,
-      img(src='confocal.png', align = "center", width=150),
+      img(src='mole_knight.png', align = "center", width=150),
       tags$br(),
       radioButtons(inputId = "navigation_bar", width="100%",selected="home",
                    label="",
@@ -112,13 +112,15 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
     column(
       width = 8,
       tags$div(align = "center", 
-               tags$h1(tags$b("Zzz... BONA Nitens!"), tags$br()),
-               tags$h2("Best multiOmic exploratioN of trAnscriptomic
-                       and metabolomic data in klebsormidium Nitens")),
+               # tags$h1(tags$b("Zzz... BONA Nitens!"), tags$br()),
+               # tags$h2("Best multiOmic exploratioN of trAnscriptomic
+               #         and metabolomic data in klebsormidium Nitens")),
+      tags$h1(tags$b("Mole Knights"), tags$br()),
+      tags$h2("MultiOmics anaLysis Exploration of Klebsormidium NItens liGHT Stress")),
       tags$br(),tags$br(),
       # Home:
       conditionalPanel(condition = "input.navigation_bar == 'home'",
-                       tags$div(align = "justify", "Welcome to", tags$b("BONA Nitens"),"a web based tool for the exploration of ", 
+                       tags$div(align = "justify", "Welcome to", tags$b("MOLE KNIGHTS"),"a web based tool for the exploration of ", 
                                 tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), "data. Specially, this web tool focuses on the study of the early response to light stress
                                 in the microalgae specie",tags$i("Klebsormidium nitens"), "as a trigger for the development of different protection mechanisms at the molecular and 
                                 celular level. We present an integrative analysis between these transcriptomic and metabolic data to characterize
@@ -335,7 +337,8 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        light."),
                        tags$br(),
                        tags$div(align ="center",img(src="figure6.png", align = "center", width=600), tags$br(),
-                                tags$b("Figure 6.")," Carotenoids."),
+                                tags$b("Figure 6."),"Gene expression level and relative carotenoid content in the carotenoid biosynthesis 
+                                pathway in Klebsormidium under high light (HL) and low light (LL)"),
                        tags$br(),
                        tags$div(align="justify","In the xanthophyll cycle, the interconversion of violaxanthin into antheraxanthin and 
                        zeaxanthin, constitutes one of the major photoprotective mechanism in Embryophyta and 
@@ -371,7 +374,9 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        targeted chaperones, co-chaperones and chaperonins that would contribute to restore misfolded proteins."),
                        tags$br(),
                        tags$div(align="center",img(src="figure7.png", align = "center", width=600), tags$br(),
-                                tags$b("Figure 7.")," Chloroplasts."),
+                                tags$b("Figure 7."),"Gene expression level for enzymes involved in retrograde signaling triggered by high 
+                                light oxidative stress inducing gene activation of protein repair mechanisms and de novo 
+                                protein synthesis."),
                        tags$br(),
                        tags$div(align="justify","Concomitant to the activation of protein repair mechanisms we found significant activation of 
                        ribosome biogenesis and cytoplasmic translation initiation. These strongly activated processes are required for de novo 
@@ -391,14 +396,14 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       
       # Github
       conditionalPanel(condition = "input.navigation_bar == 'github'",
-                       tags$div(align="justify", tags$b("Bona Nitens,"), "is entirely developed using 
+                       tags$div(align="justify", tags$b("MOLE KNIGHTS,"), "is entirely developed using 
         the R package", tags$b( tags$a(href="https://shiny.rstudio.com/", "shiny.")), "The 
         source code is released under", tags$b("GNU General Public License v3.0"), "and is hosted at",
-                                tags$b("GitHub."), "If you experience any problem using Bona Nitens please create an", 
+                                tags$b("GitHub."), "If you experience any problem using MOLE KNIGHTS please create an", 
                                 tags$b(tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN/issues","issue")), 
                                 "in GitHub and we will address it."),
                        tags$div(align="center",tags$h1(tags$b(tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN",
-                                                                     "Bona Nitens at GitHub")))),
+                                                                     "MOLE KNIGHTS at GitHub")))),
                        tags$br(),
                        tags$br(),
                        tags$div(align="justify","Here we present some of the other main programs that we have used in
@@ -437,11 +442,11 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       # Tutorial
       conditionalPanel(condition = "input.navigation_bar == 'tutorials'",
                        tags$div(align="center",uiOutput("video_tutorial")),
-                       tags$div(align = "justify", 
+                       tags$div(align = "center", 
                                 tags$br(),
                                 tags$br(),
                                 tags$div(tags$h4(tags$b("Above you can find a video tutorial on how to use the different tools implemented 
-                                in AlgaeFUN with MARACAS."))))
+                                in Mole Knights."))))
                        
       ),
       
