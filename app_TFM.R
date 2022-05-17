@@ -690,25 +690,29 @@ server <- shinyServer(function(input, output, session) {
   gen_name<-eventReactive( input$do ,{
     input$gen
   })
+  
+  
   output$barplot_selection<-renderPlot({
-    
-    # Seleccionamos la fila de interés segun el logFC
+    validate(
+      need(gen_name() %in% resultado_final$gene_name, "Sorry, there is no data for your requested. 
+      Please, check if your input is spelled correctly"
+      )
+    )
     # kfl00093_0070
     # kfl00458_0030
     # kfl00361_0130
-    if(gen_name()!="")
-    {
-      result2<-resultado_final[resultado_final$gene_name== gen_name(),]
-      
-      gene.id<-result2[,"geneID"]
-      gene.name<-result2[,"annotation"]
-      gene.expression<-result2[,c("LL_1","LL_2","HL_1","HL_2")]
-      
-      barplot.gene(gene.id,gene.name,gene.expression)
-    }
+         result2<-resultado_final[resultado_final$gene_name== gen_name(),]
+         
+         gene.id<-result2[,"geneID"]
+         gene.name<-result2[,"annotation"]
+         gene.expression<-result2[,c("LL_1","LL_2","HL_1","HL_2")]
+         
+         barplot.gene(gene.id,gene.name,gene.expression)
     
+
   })
   
+  head(resultado_final)
 # Volcano Metabolite
   volcol <- c(met.brewer("Egypt",3)[1], met.brewer("Egypt",3)[2],"grey33")
   names(volcol) <- c("activado","reprimido","ns")
