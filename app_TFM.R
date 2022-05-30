@@ -25,11 +25,22 @@ log.gene.expression <-read.table(file = "data/log_gene-expression.tsv",header=T,
 de.results <-read.table(file = "data/de_results.tsv",header=T,as.is=T)
 resultado_final<-read.table(file = "data/resultado_final.tsv",header=T,as.is=T)
 
-met.results <-read.table(file = "data/met_results.tsv",header = T, as.is = T)
+
+met.results <-read.table(file = "data/met_results_total.tsv",header = T, as.is = T)
+metabolite.names <- met.results$met_name
+head(met.results)
+length(rownames(met.results))
+
 metabolomic.data.1<-read.table(file = "data/metabolomic_data_1",header = T, as.is = T)
 metabolomic.data.2<-read.table(file = "data/metabolomic_data_2",header = T, as.is = T)
-metabolites <-read.table(file = "data/metabolites.txt",as.is = T)
+metabolites <-read.table(file = "data/metabolites.tsv", header = T, as.is = T)
 metabolites <- metabolites$x
+carotenoids <- read.table(file="data/carotenoids_klebsormidium.tsv",header=T,sep="\t",as.is=T)
+carotenoids.names <- carotenoids$carotenoid
+carotenoids <- carotenoids[,2:ncol(carotenoids)]
+rownames(carotenoids) <- carotenoids.names
+phytohormone.data <- read.table(file = "data/phytohormone.tsv",header=T)
+phytohormone.abundance <- phytohormone.data[,3:ncol(phytohormone.data)]
 
 
 # Functions:
@@ -59,31 +70,151 @@ barplot.gene <- function(gene.id,gene.name,gene.expression)
 barplot_met <-function(met.name)
 {
   current.metabolite <- met.name
-  hl.1 <- metabolomic.data.1[1:3,current.metabolite]
-  ll.1 <- metabolomic.data.1[4:6,current.metabolite]
-  mean.ll.1 <- mean(ll.1)
-  norm.hl.1 <- hl.1/mean.ll.1
-  norm.ll.1 <- ll.1/mean.ll.1
-
-  hl.2 <- metabolomic.data.2[1:3,current.metabolite]
-  ll.2 <- metabolomic.data.2[4:6,current.metabolite]
-  mean.ll.2 <- mean(ll.2)
-  norm.hl.2 <- hl.2/mean.ll.2
-  norm.ll.2 <- ll.2/mean.ll.2
   
-
-  norm.ll <- c(norm.ll.1, norm.ll.2)
-  norm.hl <- c(norm.hl.1, norm.hl.2)
-  means <- c(mean(norm.ll), mean(norm.hl))
-  sds <- c(sd(norm.ll), sd(norm.hl))
-  
-  xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
-                  names.arg = c("LL","HL"),las=2,cex.names = 1.5,
-                  ylim=c(0,max(means+sds)*1.3),cex.axis = 1.5,lwd=3,
-                  main=current.metabolite,
-                  cex.main=2)
-  arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
-         code = 3,angle=90,lwd=2)
+  if(current.metabolite %in% colnames(metabolomic.data.1)||
+     current.metabolite %in% colnames(metabolomic.data.2))
+  {
+    hl.1 <- metabolomic.data.1[1:3,current.metabolite]
+    ll.1 <- metabolomic.data.1[4:6,current.metabolite]
+    mean.ll.1 <- mean(ll.1)
+    norm.hl.1 <- hl.1/mean.ll.1
+    norm.ll.1 <- ll.1/mean.ll.1
+    
+    hl.2 <- metabolomic.data.2[1:3,current.metabolite]
+    ll.2 <- metabolomic.data.2[4:6,current.metabolite]
+    mean.ll.2 <- mean(ll.2)
+    norm.hl.2 <- hl.2/mean.ll.2
+    norm.ll.2 <- ll.2/mean.ll.2
+    
+    
+    norm.ll <- c(norm.ll.1, norm.ll.2)
+    norm.hl <- c(norm.hl.1, norm.hl.2)
+    means <- c(mean(norm.ll), mean(norm.hl))
+    sds <- c(sd(norm.ll), sd(norm.hl))
+    
+    if(means[1] > means[2])
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "greater")
+    } else
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "less")
+    }
+    
+    xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
+                    names.arg = c("LL","HL"),las=2,cex.names = 1.5,
+                    ylim=c(0,max(means+sds)*1.3),cex.axis = 1.5,lwd=3,
+                    main=current.metabolite,
+                    cex.main=2)
+    arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
+           code = 3,angle=90,lwd=2)
+    if(sig$p.value < 0.001)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]-0.1,y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]+0.1,y= (means[2] + sds[2])*1.05,pch=8)
+    } else if(sig$p.value < 0.01)
+    {
+      points(x=xpos[2]-0.05,y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]+0.05,y= (means[2] + sds[2])*1.05,pch=8)
+    } else if(sig$p.value < 0.05)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.05,pch=8)
+    }
+  }
+  else if (current.metabolite %in% carotenoids.names)
+  {
+    hl.1 <- unlist(carotenoids[current.metabolite,1:4])
+    ll.1 <- unlist(carotenoids[current.metabolite,5:7])
+    mean.ll.1 <- mean(ll.1)
+    norm.hl.1 <- hl.1/mean.ll.1
+    norm.ll.1 <- ll.1/mean.ll.1
+    
+    norm.ll <- c(norm.ll.1)
+    norm.hl <- c(norm.hl.1)
+    
+    means <- c(mean(norm.ll), mean(norm.hl))
+    sds <- c(sd(norm.ll), sd(norm.hl))
+    
+    if(means[1] > means[2])
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "greater")
+    } else
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "less")
+    }
+    
+    xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
+                    names.arg = c("LL","HL"),las=2,cex.names = 1.5,
+                    ylim=c(0,max(means+sds)*1.2),cex.axis = 1.5,lwd=3,
+                    main=current.metabolite,
+                    cex.main=2)
+    points(x = rep(xpos[1]+0.2,3),y=norm.ll)
+    points(x = rep(xpos[2]+0.2,4),y=norm.hl)
+    arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
+           code = 3,angle=90,lwd=2)
+    
+    if(sig$p.value < 0.001)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]-0.1,y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]+0.1,y= (means[2] + sds[2])*1.05,pch=8)
+    } else if(sig$p.value < 0.01)
+    {
+      points(x=xpos[2]-0.05,y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]+0.05,y= (means[2] + sds[2])*1.05,pch=8)
+    } else if(sig$p.value < 0.05)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.2,pch=8)
+    }
+  }
+  else if(current.metabolite %in% colnames(phytohormone.abundance))
+  {
+    ll.j.1.2.3 <- phytohormone.abundance[1:3,current.metabolite]
+    ll.j.4.5.6 <- phytohormone.abundance[4:6,current.metabolite]
+    
+    hl.j.1.2.3 <- phytohormone.abundance[7:9,current.metabolite]
+    hl.j.4.5.6 <- phytohormone.abundance[10:12,current.metabolite]
+    
+    norm.ll <- c(ll.j.1.2.3 / mean(ll.j.1.2.3), ll.j.4.5.6 / mean(ll.j.4.5.6))
+    norm.hl <- c(hl.j.1.2.3 / ll.j.1.2.3, hl.j.4.5.6 / ll.j.4.5.6)
+    
+    means <- c(mean(norm.ll), mean(norm.hl))
+    sds <- c(sd(norm.ll), sd(norm.hl))
+    
+    if(means[1] > means[2])
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "greater")
+    } else
+    {
+      sig <- t.test(x = norm.ll,norm.hl,alternative = "less")
+    }
+    
+    xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
+                    names.arg = c("LL","HL"),las=2,cex.names = 1.5,
+                    ylim=c(0,max(means+sds)*1.2),cex.axis = 1.5,lwd=3,
+                    main=current.metabolite,
+                    cex.main=2)
+    points(x = rep(xpos[1]+0.2,6),y=norm.ll)
+    points(x = rep(xpos[2]+0.2,6),y=norm.hl)
+    arrows(x0 = xpos,y0 = means + sds, x1 = xpos, y1 = means - sds,length = 0.1,
+           code = 3,angle=90,lwd=2)
+    
+    
+    if(sig$p.value < 0.001)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.2,pch=8)
+      points(x=xpos[2]-0.1,y= (means[2] + sds[2])*1.2,pch=8)
+      points(x=xpos[2]+0.1,y= (means[2] + sds[2])*1.2,pch=8)
+    } else if(sig$p.value < 0.01)
+    {
+      points(x=xpos[2]-0.05,y= (means[2] + sds[2])*1.05,pch=8)
+      points(x=xpos[2]+0.05,y= (means[2] + sds[2])*1.05,pch=8)
+    } else if(sig$p.value < 0.05)
+    {
+      points(x=xpos[2],y= (means[2] + sds[2])*1.2,pch=8)
+    }
+  }
+  return(NULL)
 }
 
 
@@ -545,8 +676,9 @@ server <- shinyServer(function(input, output, session) {
     
     
     # Plot interactivo con los dos
-    subplot(boxplot_A, boxplot_B,titleX = T,titleY = T) # %>%
-      # layout(title = 'Before and After Normalization') %>%  
+    subplot(boxplot_A, boxplot_B,titleX = T,titleY = T) %>%  # %>%
+      # layout(title = 'Before and After Normalization') %>% 
+    config(displayModeBar = F)
   })
   
 # PCA trans
@@ -629,8 +761,8 @@ server <- shinyServer(function(input, output, session) {
     # Volcano plot estatico con ggplot2
     volcano_A<-ggplot(as.data.frame(de.results), aes(x=logFC, y=-log10(adj.P.Val),
                                                      color=gene_type,
-                                                     text= paste0("</br> Gen: " ,gene_name,
-                                                                  "</br> Anotacion: ",annotation))) +
+                                                     text= paste0("</br> Gene: " ,gene_name,
+                                                                  "</br> Annotation: ",annotation))) +
       geom_point(size = 1) +
       scale_colour_manual(values = volcol) + 
       theme(legend.position = "none",
@@ -646,7 +778,8 @@ server <- shinyServer(function(input, output, session) {
     # # Volcano interactivo con plotly
     Volcano<-ggplotly(volcano_A,x = ~logFC, y = ~adj.P.Value,
                       tooltip = "text",
-                      width = 350, height = 400,source = "Volcano")
+                      width = 350, height = 400,source = "Volcano")%>% 
+      config(displayModeBar = F)
   })
 
   # Tabla que salga con el click
@@ -712,16 +845,16 @@ server <- shinyServer(function(input, output, session) {
 
   })
   
-  head(resultado_final)
+  
 # Volcano Metabolite
   volcol <- c(met.brewer("Egypt",3)[1], met.brewer("Egypt",3)[2],"grey33")
   names(volcol) <- c("activado","reprimido","ns")
   
   output$Volcano_met <- renderPlotly({
-    # Volcano plot estatico con ggplot2
+    
     volcano_met <- ggplot(as.data.frame(met.results), aes(x=metabolites.fold.change, y=-log10(metabolites.p.value),
-                                                          color=met_type,
-                                                          text= paste0("</br> Metabolilte: " ,met_name))) +
+                                                              color=met_type,
+                                                              text= paste0("</br> Metabolite: " ,met_name))) +
       geom_point(size = 1.2) +
       scale_colour_manual(values = volcol) + 
       theme(legend.position = "none",
@@ -732,22 +865,25 @@ server <- shinyServer(function(input, output, session) {
             axis.line.y.left   = element_line(color = 'black'),
             panel.border = element_blank(),
             plot.title = element_text(hjust = 0.5,size = 15)) + 
-      ggtitle("Volcano plot from Metabolites")+ 
+      ggtitle("Volcano plot from primary metabolites \n and carotenoids and phytohormone")+ 
       labs(x = "logFC",y="adj.P.Value") +
-      xlim(-1, 3) +
+      xlim(-5, 6) +
+      ylim(0,6) +
       geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey33",size=0.3)
-    
-    
+
+
     # # Volcano interactivo con plotly
     Volcano_met <- ggplotly(volcano_met,x = ~logFC, y = ~adj.P.Value,
                                     tooltip = "text",
-                                    width = 400, height = 300, source = "Volcano_met")
+                                    width = 460, height = 400, source = "Volcano_met")%>% 
+      config(displayModeBar = F)
   })
   
   # Tabla que salga con el click
   data_met <- reactive({
     met.results
   })
+  
   output$table_met<- DT::renderDataTable({
     # Si no hay click, no hay na
     event.data_met <- event_data("plotly_click", source = "Volcano_met")
@@ -756,16 +892,17 @@ server <- shinyServer(function(input, output, session) {
     # Con click sale la  fila con informacion de ese gen
     result_met <- data_met()[data_met()$metabolites.fold.change == event.data_met$x ,]
     DT::datatable(result_met, options = list(searching = FALSE, scrollX = T,lengthChange = FALSE))%>%
-
       formatStyle( 0, target= 'row',color = 'black', lineHeight='80%')
   })
   
+  met.results[met.results$met_name == "zeaxanthin",]
   # # Barplot metabolitos segun click
   barplot_data_met<-reactive({
     met.results
   })
 
   output$Barplot_met<-renderPlot({
+  
     # Si no hay click, no hay na
     event.data_met <- event_data("plotly_click", source = "Volcano_met")
     print(event.data_met)
@@ -778,6 +915,7 @@ server <- shinyServer(function(input, output, session) {
 
   })
   
+
   # Seleccion de barplots metabolites
   met_name_bar<-eventReactive( input$do_met ,{
     input$metabolite
