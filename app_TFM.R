@@ -53,7 +53,7 @@ barplot.gene <- function(gene.id,gene.name,gene.expression)
   expression.sd.ll <- sd(unlist(gene.expression[,c("LL_1", "LL_2")]))
   expression.sd.hl <- sd(unlist(gene.expression[,c("HL_1", "HL_2")]))
   sds <- c(expression.sd.ll,expression.sd.hl)
-  
+
   
   par(lwd=1.5)
   xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
@@ -285,8 +285,10 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 data for  ",tags$i("Charophyta")," under specific conditions relevant to the terrestralization process is preventing the full characterization of
                                 the molecular systems that promoted the transition to the first land plants. "),
                        tags$br(),tags$br(),
-                       tags$div(align ="center",img(src="phylogeny.png", align = "center", width=800), tags$br(),
-                                tags$b("Figure 1."),"Phylogenetic tree of the evolution of green algae."),
+                       tags$div(align ="center",img(src="dibujo.png", align = "center", width=700), tags$br(),
+                                tags$b("Figure 1."),"Another great moment in evolution. Inspired by the classical ‘Great moments in evolution’ cartoon by Gary Larson,
+                                this figure illustrates some of the key features that probably enabled early plants to thrive on land: the rigid cell wall, several
+                                plastids per cell, phenylpropanoids enabling protection for example, to ultraviolet-B radiation; artwork by Debbie Maizels (Rensing, 2018)."),
                        tags$br(),tags$br(),
                        tags$div(align = "justify", "In this study, we have chosen the freshwater facultative terrestrial ",tags$i("Charophyta Klebsormidium nitens")," as",tags$b("model organism"),"
                                 to study the",tags$b("transcriptomic and metabolomic response to high light intensity"),"recreating at least one of the most critical
