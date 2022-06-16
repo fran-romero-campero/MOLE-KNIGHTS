@@ -15,7 +15,7 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://choosealicense.com/licenses/gpl-3.0/)
 
-# Summary
+## Summary
 
 Welcome to **MOLE KNIGHTS!** a web based tool for the exploration of Transcriptomic and Metabolomic data. Specially, this web tool focuses on the study of the early response to light stress (3 h) in the microalgae specie *Klebsormidium nitens* as a trigger for the development of different protection mechanisms at the molecular and celular level. We present the users opportunity to perform an integrative analysis between these transcriptomic and metabolic data to characterize the molecular mechanisms involved in the response to high light in Klebsormidium.
 
