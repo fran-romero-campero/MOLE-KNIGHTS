@@ -27,6 +27,28 @@ For more information, select from the left side navigation bar the type of explo
 
 ## Installation
 
+MOLE KNIGHTS is fully programed in R (version 4.1.2.) and and requires the installation of the following packages:
+
+```r
+
+install.packages("shiny")
+
+install.packages("shinythemes")
+
+install.packages("ggplot2")
+
+install.packages("MetBrewer")
+
+install.packages("cowplot")
+
+install.packages("plotly")
+
+install.packages("DT")
+
+install.packages("tidyr")
+
+```
+
 
 ## Support and connection:
 
