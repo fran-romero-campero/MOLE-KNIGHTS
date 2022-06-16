@@ -38,7 +38,7 @@ cd opt
 git clone https://github.com/fran-romero-campero/MARACAS.git
 ```
 
-MOLE KNIGHTS is fully programed in R (version 4.1.2.) and and requires the installation of the following packages:
+**MOLE KNIGHTS** is fully programed in **R (version 4.1.2.)** and requires the installation of the following packages:
 
 ```r
 # Necessary packages:
@@ -61,7 +61,7 @@ install.packages("tidyr")
 
 ```
 
-2. Run the R script ´app_TFM.R´ and enjoy!
+2. Run the R script **app_TFM.R** and enjoy!
 
 
 ## Support and connection:
