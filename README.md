@@ -23,6 +23,9 @@ For more information, select from the left side navigation bar the type of explo
 
 ![MOLE](https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_git.png)
 
+<p align="center">
+  <img width="600" height="200" src="https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_git.png">
+</p>
 
 ## Installation
 
