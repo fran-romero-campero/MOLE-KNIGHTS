@@ -21,6 +21,9 @@ Welcome to **MOLE KNIGHTS!** a web based tool for the exploration of Transcripto
 
 For more information, select from the left side navigation bar the type of exploration in which you are interested and follow the relevant intructions. In addition, a video tutorial has been provided that describes in detail the information collected in each section. If you find this work interesting and useful in your research, please do not hesitate to cite us. 
 
+![MOLE](https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_knight.png)
+
+
 ## Installation
 
 
