@@ -27,9 +27,24 @@ For more information, select from the left side navigation bar the type of explo
 
 ## Installation
 
+To install MOLE KNIGHTS you do NOT need sudo/administrator permissions just follow these steps:
+
+1. Download the code from Github, for example, to your opt folder (make sure you have such a folder or create it with mkdir opt in your home directory):
+
+```bash
+cd
+mkdir opt
+cd opt
+git clone https://github.com/fran-romero-campero/MARACAS.git
+```
+
+2. Run the R script ´app_TFM.R´ and enjoy!
+
+
 MOLE KNIGHTS is fully programed in R (version 4.1.2.) and and requires the installation of the following packages:
 
 ```r
+# Necessary packages:
 
 install.packages("shiny")
 
