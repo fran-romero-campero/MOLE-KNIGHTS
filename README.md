@@ -35,7 +35,7 @@ To install MOLE KNIGHTS you do NOT need sudo/administrator permissions just foll
 cd
 mkdir opt
 cd opt
-git clone https://github.com/fran-romero-campero/MARACAS.git
+git clone https://github.com/sandungxs/MOLE-KNIGHTS.git
 ```
 
 **MOLE KNIGHTS** is fully programed in **R (version 4.1.2.)** and requires the installation of the following packages:
