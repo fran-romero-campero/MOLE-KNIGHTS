@@ -25,12 +25,6 @@ For more information, select from the left side navigation bar the type of explo
   <img width="300" height="200" src="https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_git.png">
 </p>
 
-## Documentation
-
-To learn how MOLE KNIGHTS works, please click on the video tutorial below:
-
-[![Watch the video](https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/front_end.png)](https://youtu.be/7UwoD7k_zTw)
-
 
 ## Installation
 
@@ -69,6 +63,13 @@ install.packages("tidyr")
 ```
 
 2. Run the R script **app_TFM.R** and enjoy!
+
+
+## Documentation
+
+To learn how MOLE KNIGHTS works, please click on the video tutorial below:
+
+[![Watch the video](https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/front_end.png)](https://youtu.be/7UwoD7k_zTw)
 
 
 ## Support and connection:
