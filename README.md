@@ -29,7 +29,7 @@ For more information, select from the left side navigation bar the type of explo
 
 To learn how MOLE KNIGHTS works, please follow the video tutorial below:
 
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/7UwoD7k_zTw)
+[![Watch the video](https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_git.png)](https://youtu.be/7UwoD7k_zTw)
 
 
 ## Installation
