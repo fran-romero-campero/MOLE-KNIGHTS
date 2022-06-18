@@ -25,6 +25,13 @@ For more information, select from the left side navigation bar the type of explo
   <img width="300" height="200" src="https://github.com/sandungxs/MOLE-KNIGHTS/blob/main/ReadmeFiles/mole_git.png">
 </p>
 
+## Documentation
+
+To learn how MOLE KNIGHTS works, please follow the video tutorial below:
+
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/7UwoD7k_zTw)
+
+
 ## Installation
 
 To install MOLE KNIGHTS you do NOT need sudo/administrator permissions just follow these steps:
