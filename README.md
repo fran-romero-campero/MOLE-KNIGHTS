@@ -4,7 +4,7 @@
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
-## Authors
+## Developers
 
 - Emma Serrano-Pérez [@sandungxs](https://github.com/sandungxs)
 - Directed by Francisco J. Romero-Campero [@fran-romero-campero](https://github.com/fran-romero-campero)
