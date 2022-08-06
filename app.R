@@ -57,7 +57,7 @@ barplot.gene <- function(gene.id,gene.name,gene.expression)
   
   par(lwd=1.5)
   xpos <- barplot(means,col=c(met.brewer("Egypt",2)[2],met.brewer("Egypt",2)[1]),
-                  names.arg = c("LL","HL"),las=2,cex.names = 1.5,
+                  names.arg = c("LL","HL"),las=2,cex.names = 1.5,ylab= "FPKM",cex.lab=1.4,
                   ylim=c(0,max(means+sds)*1.2),cex.axis = 1.5,lwd=3,
                   main=paste(c(gene.name, gene.id,sep = "\n",collapse=" ")),
                   cex.main=1.25)
@@ -229,13 +229,13 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       radioButtons(inputId = "navigation_bar", width="100%",selected="home",
                    label="",
                    choices=c(
-                     "Sweet Home Alabama!" = "home",
-                     "Previous Research Information" = "intro",
+                     "Home" = "home",
+                     "Introduction to our Klebsormidium Research" = "intro",
                      "Global Transcriptome Statistics" = "globaltrans",
-                     "Specific Gene Analysis" = "gene",
+                     "Individual Gene Analysis" = "gene",
                      "Global Metabolomic Statistics" = "globalmet",
-                     "Specific Metabolite Analysis" = "metabolite",
-                     "Omics... Assemble!" = "integration",
+                     "Individual Metabolite Analysis" = "metabolite",
+                     "Omics... Integration!" = "integration",
                      "Tutorials" = "tutorials",
                      "GitHub repository" = "github",
                      "Citation and Contact" = "citation"
@@ -251,17 +251,19 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       tags$br(),tags$br(),
       # Home:
       conditionalPanel(condition = "input.navigation_bar == 'home'",
-                       tags$div(align = "justify", "Welcome to", tags$b("MOLE KNIGHTS"),"a web based tool for the exploration of ", 
-                                tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), "data. Specially, this web tool focuses on the study of the early response to light stress
-                                in the microalgae specie",tags$i("Klebsormidium nitens"), "as a trigger for the development of different protection mechanisms at the molecular and 
-                                celular level. We present an integrative analysis between these transcriptomic and metabolic data to characterize
+                       tags$div(align = "justify", "Welcome to", tags$b("MOLE KNIGHTS"),"a web based tool for the exploration of",
+                                tags$b(tags$a(href="https://www.frontiersin.org/articles/10.3389/fpls.2022.855243/full", "our multiomics analysis")), "(", 
+                                tags$b("Transcriptomic"), "and ", tags$b("Metabolomic"), ") of the response to 3 hours of high light treatment in the 
+                                fascinating charophyte microalga ",tags$i("Klebsormidium nitens."), 
+                                "We observed an activation of different protection mechanisms at the molecular and 
+                                celular level. Here, we present an integrative analysis to characterize
                                 the molecular mechanisms involved in the response to high light in Klebsormidium and relate them to the mechanisms used by land plants
                                 or Embryophyta."),
                        tags$br(),
-                       tags$div(align = "justify","For more information, select from the left side navigation bar the type of exploration in which you are interested and follow the relevant intructions.
-                       In addition, a", tags$b("video tutorial"), "has been provided that describes in detail the information collected in each section. The code used to generate this websites is available on", 
-                       tags$b("Github."), "If you find this work interesting and useful in your research, please
-                       do not hesitate to cite us."),
+                       tags$div(align = "justify","For more information, select from the navigation panel on the left the type of exploration in which you are interested and follow the instructions.
+                       In addition, you can watch our", tags$b(tags$a(href="https://www.youtube.com/watch?v=7UwoD7k_zTw", "video tutorial")), "on how to use MOLEKNIGTS. Our code for this web app is available on", 
+                       tags$b(tags$a(href="https://github.com/sandungxs/MOLE-KNIGHTS", "Github.")), "If you find this work interesting and useful in your research, please",
+                       tags$b(tags$a(href="https://www.frontiersin.org/articles/10.3389/fpls.2022.855243/full", "cite us."))),
                tags$br(),tags$br(),
                tags$div(align ="center",img(src="optico.png", align = "center", width=600))
                # 
@@ -270,11 +272,11 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       conditionalPanel(condition = "input.navigation_bar == 'intro'",
                        tags$h4(tags$b(align="right","Introduction to our case study:")),
                        tags$br(),
-                       tags$div(align = "justify", "The evolutionary history of the ",tags$b("green plants kingdom")," or", tags$i("Viridiplantae"),"splits into two different lineages", 
-                       tags$i("Chlorophyta")," and",tags$i("Streptophyta"),".",tags$i("Chlorophyta"),"are primarily constituted by marine and freshwater green microalgae. In turn,", tags$i("Streptophyta")," are
+                       tags$div(align = "justify", "The evolutionary history of the ",tags$b("green lineage")," or", tags$i("Viridiplantae"),"splits into two different clades", 
+                       tags$i("Chlorophyta")," and",tags$i("Streptophyta."),tags$i("Chlorophyta"),"are primarily constituted by marine and freshwater green microalgae although multicellular organisms are also present and terrestralization events have taken place. In turn,", tags$i("Streptophyta")," are
                        divided into two different clades",tags$i("Charophyta"),"and",tags$i("Embryophyta"),". Whereas",tags$i("Embryophyta"),"comprises mainly land plants,",tags$i("Charophyta"),"are still 
                        considered algae with a preference for freshwater and with some facultative terrestrial species.  Present-day",tags$i("Charophyta")," are generally 
-                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embriophyta"),tags$b("(Fig. 1)"),". Accordingly, the molecular 
+                       accepted as the extant algal species most closely related to the aquatic ancestors of land plants or",tags$i("Embryophyta"),tags$b("(Fig. 1)"),". Accordingly, the molecular 
                        systems that potentially allowed this group of photosynthetic organisms to evolve towards terrestrial land plants are under intense analysis."),
                        tags$br(),
                        tags$div(align = "justify", "During this transition, the evolution of response molecular systems to",tags$b(" terrestrial environmental stresses")," was 
@@ -286,12 +288,12 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 the molecular systems that promoted the transition to the first land plants. "),
                        tags$br(),tags$br(),
                        tags$div(align ="center",img(src="dibujo.png", align = "center", width=700), tags$br(),
-                                tags$b("Figure 1."),"Another great moment in evolution. Inspired by the classical ‘Great moments in evolution’ cartoon by Gary Larson,
+                                tags$b("Figure 1."),"Another key event in evolution. Inspired by the classical ‘Great moments in evolution’ cartoon by Gary Larson,
                                 this figure illustrates some of the key features that probably enabled early plants to thrive on land: the rigid cell wall, several
-                                plastids per cell, phenylpropanoids enabling protection for example, to ultraviolet-B radiation; artwork by Debbie Maizels (Rensing, 2018)."),
+                                plastids per cell, phenylpropanoids enabling protection to ultraviolet-B radiation; artwork by Debbie Maizels (Rensing, 2018)."),
                        tags$br(),tags$br(),
                        tags$div(align = "justify", "In this study, we have chosen the freshwater facultative terrestrial ",tags$i("Charophyta Klebsormidium nitens")," as",tags$b("model organism"),"
-                                to study the",tags$b("transcriptomic and metabolomic response to high light intensity"),"recreating at least one of the most critical
+                                to study the",tags$b("transcriptomic and metabolomic response to high light irradiance"),"recreating at least one of the most critical
                                 environmental changes faced by plants during terrestralization. ",tags$i("K. nitens")," cultures consist of multicellular and non-branching
                                 filaments without specialized cells with a single chloroplast. Many",tags$i("Klebsormidium"),"species are cosmopolitan distributed in terrestrial
                                 environments as soil crusts and rocks as well as freshwater habitats like streams and rivers. "),
@@ -301,7 +303,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 meditated by the presence of photoprotective mechanisms dissipating energy as heat (non- photochemical quenching, NPQ) and/or
                                 by the activation of alternative electron routes to reduce reactive oxygen species (ROS) production. Several comparative genomic
                                 analyses have been carried out providing evidence about ",tags$i("Klebsormidium")," possessing fundamental molecular mechanisms required for the
-                                adaptation and survival in terrestrial environments including wax-related genes,phytohormone signaling and transcription factors 
+                                adaptation and survival in terrestrial environments including wax-related genes, phytohormone signaling and transcription factors 
                                 involved in resistance to high light and UV radiation. Nonetheless, there are very few transcriptomic studies integrating gene 
                                 expression with physiological data aiming at the characterization of ",tags$i("Klebsormidium"),"responses to abiotic stresses."),
                        tags$br(),tags$br(),
@@ -309,8 +311,8 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$br(),
                        tags$div(align = "justify",tags$i("Klebsormidium nitens")," (strain NIES-2285) was obtained from the",tags$b(" National Institute for Environmental Studies (Japan)."),"
                                 Cells were grown photoautotrophically in Bold’s Basal Medium using photobioreactors containing 0.8 L of cell suspension and bubbled with
-                                air supplemented with 1% (v/v) CO 2 as carbon source. Photobioreactors were continuously illuminated with white light lamps at 50 μE m
-                                -2 s -1 and maintained at 20ºC. Defoamer (Antifoam 204) was added to avoid the contamination of the aeration systems. Cultures at 
+                                air supplemented with 1% (v/v) CO2 as carbon source. Photobioreactors were continuously illuminated with white light lamps at 50 μE m
+       -2 s -1 and maintained at 20ºC. Defoamer (Antifoam 204) was added to avoid the contamination of the aeration systems. Cultures at 
                                 exponential phase with 45 μg/ml chlorophyll content were used in our experiments. Control cultures were kept under a control light 
                                 irradiance of 50 μE m -2 s -1 whereas high light cultures were illuminated for three hours with an irradiance of 1500 μE m -2 s -1. Six independent
                                 biological replicates were considered for low and high light irradiance metabolomic data generation. Cells were collected, 
@@ -321,7 +323,7 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                        tags$div(align = "justify", "Using these cells, ",tags$b("RNA extraction"),"was performed to obtein purified RNA and the computational pipeline",
                                 tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","MARACAS"),
                                 "was used to determine differentially expressed genes according to a log2FC of ± 1 and a adjusted p-value or FDR 
-                                (False Discobery Rate) threshold of 0.05. he software tool",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","AlgaeFun"),"was used to perform functional 
+                                (False Discobery Rate) threshold of 0.05. The software tool",tags$a(href="https://greennetwork.us.es/AlgaeFUN/","AlgaeFun"),"was used to perform functional 
                                 enrichment analysis based on Gene Ontology (GO) terms and Kyoto Encyclopedia of Genes and Genomes (KEGG) pathways over the sets of differentially
                                 expressed genes."),
                        tags$br(),
@@ -332,34 +334,29 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       ),
       # Global Transcriptomic Statistics:
       conditionalPanel(condition = "input.navigation_bar == 'globaltrans'",
-                       tags$div(align = "justify", "One of the main ways of responding to changes in the environment is by",tags$b("modifying gene expression"),"by varying the number of transcripts
-                                present in cells that conform a specific transcriptome. For this reason, the",tags$b("RNA-seq technique"),"was developed, a massive cDNA sequencing technique obtained through RNA 
-                                extraction using high-performance sequencing. In this case, the study focused on RNA-seq applied on eukaryotic coding RNA."),
+                       tags$div(align = "justify", "One of the main mechanisms responding to environmental changes is",tags$b("differntial gene expression."),
+                                "Accordingly, ",tags$b("RNA-seq "),"was developed as a massive cDNA sequencing technique obtained through RNA 
+                                extraction using high-performance sequencing. In this study we focus on RNA-seq applied to eukaryotic coding mRNA."),
                        tags$br(),
                        
-                       tags$h4(tags$b(align="right","Previous Mathematical/Computational Analysis:")),
+                       tags$h4(tags$b(align="right","Mathematical/Computational Analysis:")),
                        tags$br(),
-                       tags$div(align = "justify", "The previous mathematical/computational analysis was carried out according to the protocol established in the",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","MARACAS")," specialized
-                                in microalgae using the",tags$b("HISAT2 mapper"),", obtaining as a result a",tags$b("normalized continuous data matrix by FPKM"),"(Fragments Per Kilobase of
-                                transcripts of mapped reads) that normalizes by the length of the read and by the number of millions of reads. In addition, it applies a second upper quantile
-                                normalization and log2 transformation that, as can be seen",tags$b("(Fig. 2)"),", improves the distribution of the data."),
+                       tags$div(align = "justify", "Mathematical/computational analysis was carried out using the automatic pipeline implemented in",tags$a(href="https://github.com/fran-romero-campero/AlgaeFUN","MARACAS.")),
                        tags$br(),tags$br(),
                        tags$div(align="center",plotlyOutput("distPlot"), tags$br(),
                                 tags$b("Figure 2."),"Boxplot before and after normalization. Please, hover over the plot for more information."),
                        tags$br(),tags$br(),
-                       tags$div(align="justify","A quick way to explain the variability between samples is using a",tags$b("PCA (Principal Component Analysis)")," where the 3 main components are represented. In this case,
-                                it is observed that the first 2 components would be sufficient since they collect most of the variability of the data."),
+                       tags$div(align="justify","A quick method to visualize the variability between samples is ",tags$b("PCA (Principal Component Analysis).")),
                        tags$br(),
                        tags$div(align="center",plotlyOutput("PCA_trans")),
                        
                        tags$h4(tags$b(align="right","Differentially Expressed Genes:")),
                        tags$br(),
-                       tags$div(align="justify", "Moreover, this software allows to determinate",tags$b("differentially expressed genes"),". In this case, expression was detected
-                       in in",tags$b("68.4 %"),"of the 17290 genes in
-                       the current Klebsormidium genome annotation. According to a log2FC of ± 1 and a q-value or FDR (False Discobery Rate) threshold of 0.05,"
-                       ,tags$b("significant differential gene expression"),"
-                       was determined after three hours of high light treatment in",tags$b("7.84 %"),"of the entire Klebsormidium genome with respect to low light conditions. 
-                       Specifically, we identified",tags$b("667 activates")," 
+                       tags$div(align="justify", "MARACAS produces lists of ",tags$b("differentially expressed genes"),". In our study, expression was detected
+                       for",tags$b("68.4 %"), "of the 17290 genes in the current Klebsormidium genome annotation. According to a log2FC of ± 1 
+                       and a q-value or FDR (False Discobery Rate) threshold of 0.05",
+                       tags$b("7.84 %"),"of the entire Klebsormidium genome was" ,tags$b("significant differentially expressed"),"after three hours 
+                       of high light treatment. Specifically, we identified",tags$b("667 activates")," 
                        and",tags$b(" 678 repressed genes (Fig. 3).")),
                        tags$br(),tags$br(),
                        tags$div(splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("Volcano"), plotOutput("Barplot")), tags$br(),align="center",
@@ -392,19 +389,17 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
                                 to damages caused by high light.")
                        # 
       ),
-      # Specific Gen Study:
+      # Specific Gene Study:
       conditionalPanel(condition = "input.navigation_bar == 'gene'",
-                        tags$div(align="justify", "In the",tags$b("Global Transcriptomic Statistics")," tab, a global exploration of the transcriptomic data is performed, but it may be interesting
-                                 to study a single gene due to possible implications in different aspects. To do this, enter the",tags$b("gene identifier")," in the 
-                                 lower box and you will be able to see a barplot with the difference in gene expression between conditions."),
+                        tags$div(align="justify", "In the",tags$b("Global Transcriptomic Statistics")," tab, a global exploration of the transcriptomic data is performed. 
+                        Here the expression of individual genes can be represented with a barplot. Enter the",tags$b("gene identifier")," in the 
+                                 box below and a barplot with gene expression measured as FPKM under low light (LL, blue) and high light (HL, red) 
+                                 will be represented."),
                        tags$br(),tags$br(),
-                       textInput("gen", label="Please, choose a gen:", placeholder = ""),
-                       actionButton("do","Update Now!",icon ("sync")),
-                       tags$br(),tags$br(),
-                       plotOutput("barplot_selection")
                        
-                       
-                      
+                       splitLayout(cellWidths = c("50%", "50%"), tags$div(textInput("gen", label="Please, choose a gene:", placeholder = "",value = "kfl00109_0340"),
+                                                                          actionButton("do","Update Now!",icon ("sync"))),
+                                   plotOutput("barplot_selection",width = 300))
       ),
       # Global Metabolomic Statistics:
       conditionalPanel(condition = "input.navigation_bar == 'globalmet'",
@@ -437,15 +432,12 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       
       # Specific Metabolite Study:
       conditionalPanel(condition = "input.navigation_bar == 'metabolite'",
-                       tags$div(align="justify", "In the",tags$b("Global Metabolomic Statistics")," tab, a global exploration of the metabolomic data is performed, but it may be interesting
-                                 to study a single metabolite due to possible implications in different aspects. To do this, enter the",tags$b("metabolite name")," in the 
-                                 lower box and you will be able to see a barplot with the difference in abundance between conditions."),
+                       tags$div(align="justify", "In the",tags$b("Global Metabolomic Statistics")," tab, a global exploration of the metabolomic data is performed. 
+                       Users can also study individual metabolites entering the",tags$b("metabolite name")," in the 
+                                 box below to obtain a barplot with their abundance under high light irradiance with respect to low light."),
                        tags$br(),tags$br(),
-                       selectInput("metabolite",label="Please, choose a metabolite:",choices = metabolites,selected = "Arginine"),
-                       actionButton("do_met","Update Now!",icon ("sync")),
-                       tags$br(),tags$br(),
-                       plotOutput("barplot_selection_metabolites")
-                       ),
+                       splitLayout(cellWidths = c("50%", "50%"), tags$div(selectInput("metabolite",label="Please, choose a metabolite:",choices = metabolites,selected = "Tryptophan"),actionButton("do_met","Update Now!",icon ("sync"))),
+                                                                          plotOutput("barplot_selection_metabolites",width = 300))),
       
       # Total integration
       conditionalPanel(condition = "input.navigation_bar == 'integration'",
@@ -591,6 +583,8 @@ ui <- shinyUI(fluidPage(theme = shinytheme("flatly"),
       tags$br(),tags$br(),tags$br(),
       img(src='logo_csic.jpg', align = "center", width=100),
       tags$br(),tags$br(),
+      tags$div(align = "center", width=60,
+               HTML("<script type=\"text/javascript\" src=\"//rf.revolvermaps.com/0/0/8.js?i=5is8gzitghh&amp;m=7&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33\" async=\"async\"></script>"))
       )
   ),
 
